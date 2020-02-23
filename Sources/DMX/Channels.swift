@@ -235,7 +235,8 @@ public extension Channels.Slot {
 extension Channels.Slot: CustomStringConvertible {
     
     public var description: String {
-        return "\(Float(rawValue) / Float(UInt8.max))%"
+        let percentage = (Float(rawValue) / Float(UInt8.max)) * 100
+        return String(format: "%.1f", percentage).replacingOccurrences(of: ".0", with: "") + "%"
     }
 }
 
