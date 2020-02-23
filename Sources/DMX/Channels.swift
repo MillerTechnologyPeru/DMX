@@ -256,6 +256,6 @@ extension Channels.Slot: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Float) {
         precondition(value <= 1.0)
         precondition(value >= 0.0)
-        self.init(rawValue: UInt8(value * 255))
+        self.init(rawValue: UInt8(value * 255.0))
     }
 }
