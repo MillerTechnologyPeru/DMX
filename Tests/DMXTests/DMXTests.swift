@@ -31,6 +31,34 @@ final class DMXTests: XCTestCase {
         }
         
         do {
+            var value = Channels()
+            value[0] = 0.01
+            value[1] = 0.02
+            value[2] = 0.03
+            value[Channels.maxLength - 1] = 1.0
+            XCTAssertEqual(value.count, Channels.maxLength)
+            XCTAssertFalse(value.isEmpty)
+            XCTAssertNotEqual(value.elements.count, Channels.maxLength)
+            XCTAssertNotEqual(value.count, value.elements.count)
+            XCTAssertEqual(value.elements.count, 4)
+            XCTAssertEqual(value.data.count, 512)
+            value.count = 3
+            XCTAssertEqual(value.count, 3)
+            XCTAssertFalse(value.isEmpty)
+            XCTAssertEqual(value.elements.count, 3)
+            XCTAssertEqual(value.data.count, 3)
+            XCTAssertEqual(value.count, value.elements.count)
+            value.count = 6
+            XCTAssertEqual(Array(value), [0.01, 0.02, 0.03, 0.0, 0.0, 0.0])
+            XCTAssertEqual(value.elements.count, 4)
+            XCTAssertNotEqual(value.count, value.elements.count)
+            value.count = 2
+            XCTAssertEqual(Array(value), [0.01, 0.02])
+            XCTAssertEqual(value.elements.count, 2)
+            XCTAssertEqual(value.count, value.elements.count)
+        }
+        
+        do {
             let descriptions: [Channels.Slot: String] = [
                 0x00 : "0%",
                 0x01 : "0.4%",
