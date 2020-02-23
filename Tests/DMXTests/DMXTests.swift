@@ -17,6 +17,9 @@ final class DMXTests: XCTestCase {
             XCTAssertEqual(Channels().data.count, 0)
             XCTAssert(Channels(data: Data())!.isEmpty)
             XCTAssertNotEqual(Channels(), [0x00])
+            XCTAssertNil(Channels().elements.firstKey)
+            XCTAssertNil(Channels().elements.lastKey)
+            XCTAssertEqual(Channels().hashValue, Channels().hashValue)
         }
         
         do {
@@ -27,10 +30,20 @@ final class DMXTests: XCTestCase {
         do {
             let value: Channels = [0.0, 0.004, 1.0, 0.02, 1.0, 0.004]
             XCTAssertEqual(value.count, 6)
+            XCTAssertEqual(value.elements.firstKey, 0)
+            XCTAssertEqual(value.elements.lastKey, 5)
             XCTAssertEqual(value, [0: 0x00, 1: 0x01, 2: 0xFF, 3: 0x05, 4: 0xFF, 5: 0x01])
+            XCTAssertEqual(value[0], .zero)
             XCTAssertEqual(value.description, "[0%, 0.4%, 100%, 2%, 100%, 0.4%]")
             XCTAssertEqual(value, Channels(data: Data([0x00, 0x01, 0xFF, 0x05, 0xFF, 0x01])))
             XCTAssertEqual(value, Channels([0x00, 0x01, 0xFF, 0x05, 0xFF, 0x01]))
+            XCTAssertEqual(value, value)
+            XCTAssertEqual(value.reversed(), value.reversed())
+            XCTAssertEqual(value.hashValue, value.hashValue)
+            XCTAssertNotEqual(value, [])
+            XCTAssertNotEqual(value, [0x00])
+            XCTAssertNotEqual(value, [0x00, 0x01])
+            XCTAssertNotEqual(value, [1, 1, 1, 1, 1, 1])
         }
         
         do {
@@ -39,6 +52,10 @@ final class DMXTests: XCTestCase {
             value[1] = 0.02
             value[2] = 0.03
             value[Channels.maxLength - 1] = 1.0
+            XCTAssertEqual(value, value)
+            XCTAssertEqual(value.hashValue, value.hashValue)
+            XCTAssertEqual(value.elements.firstKey, 0)
+            XCTAssertEqual(value.elements.lastKey, UInt(Channels.maxLength - 1))
             XCTAssertEqual(value.count, Channels.maxLength)
             XCTAssertFalse(value.isEmpty)
             XCTAssertNotEqual(value.elements.count, Channels.maxLength)
@@ -46,16 +63,22 @@ final class DMXTests: XCTestCase {
             XCTAssertEqual(value.elements.count, 4)
             XCTAssertEqual(value.data.count, 512)
             value.count = 3
+            XCTAssertEqual(value, value)
+            XCTAssertEqual(value.hashValue, value.hashValue)
             XCTAssertEqual(value.count, 3)
             XCTAssertFalse(value.isEmpty)
             XCTAssertEqual(value.elements.count, 3)
             XCTAssertEqual(value.data.count, 3)
             XCTAssertEqual(value.count, value.elements.count)
             value.count = 6
+            XCTAssertEqual(value, value)
+            XCTAssertEqual(value.hashValue, value.hashValue)
             XCTAssertEqual(Array(value), [0.01, 0.02, 0.03, 0.0, 0.0, 0.0])
             XCTAssertEqual(value.elements.count, 4)
             XCTAssertNotEqual(value.count, value.elements.count)
             value.count = 2
+            XCTAssertEqual(value, value)
+            XCTAssertEqual(value.hashValue, value.hashValue)
             XCTAssertEqual(Array(value), [0.01, 0.02])
             XCTAssertEqual(value.elements.count, 2)
             XCTAssertEqual(value.count, value.elements.count)
