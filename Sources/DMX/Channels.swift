@@ -70,6 +70,7 @@ extension Channels: Equatable {
     
     public static func == (lhs: Channels, rhs: Channels) -> Bool {
         // enumerate all elements
+        guard lhs.count == rhs.count else { return false }
         for (index, element) in lhs.enumerated() {
             guard rhs[index] == element else { return false }
         }
