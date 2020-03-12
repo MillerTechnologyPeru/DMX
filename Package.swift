@@ -32,6 +32,11 @@ let package = Package(
         ),
         .testTarget(
             name: "DMXTests",
-            dependencies: ["DMX"]),
+            dependencies: ["DMX"]
+        ),
+        .testTarget(
+            name: "RDMTests",
+            dependencies: ["RDM"]
+        )
     ]
 )

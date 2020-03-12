@@ -1,5 +1,5 @@
+import Foundation
 import XCTest
-
 import DMXTests
 
 var tests = [XCTestCaseEntry]()
