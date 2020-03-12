@@ -9,7 +9,12 @@ let package = Package(
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "DMX",
-            targets: ["DMX"]),
+            targets: ["DMX"]
+        ),
+        .library(
+            name: "RDM",
+            targets: ["RDM"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -21,6 +26,10 @@ let package = Package(
         .target(
             name: "DMX",
             dependencies: []),
+        .target(
+            name: "RDM",
+            dependencies: ["DMX"]
+        ),
         .testTarget(
             name: "DMXTests",
             dependencies: ["DMX"]),
