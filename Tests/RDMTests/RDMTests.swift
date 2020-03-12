@@ -13,6 +13,8 @@ final class RDMTests: XCTestCase {
 
     static let allTests = [
         ("testResponseError", testResponseError),
+        ("testCommandClass", testCommandClass),
+        ("testProtocolVersion", testProtocolVersion)
     ]
 
     func testResponseError() {
@@ -32,5 +34,12 @@ final class RDMTests: XCTestCase {
         
         XCTAssertTrue(CommandClass.get.isResponseExpected)
         XCTAssertFalse(CommandClass.getResponse.isResponseExpected)
+    }
+    
+    func testProtocolVersion() {
+        
+        XCTAssertEqual(ProtocolVersion.v1_0.description, "v1.0")
+        XCTAssertEqual(ProtocolVersion.v1_0.rawValue, 0x0100)
+        XCTAssertEqual(ProtocolVersion(rawValue: ProtocolVersion.v1_0.rawValue), .v1_0)
     }
 }
