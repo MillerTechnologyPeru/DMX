@@ -27,4 +27,10 @@ final class RDMTests: XCTestCase {
         
         #endif
     }
+    
+    func testCommandClass() {
+        
+        XCTAssertTrue(CommandClass.get.isResponseExpected)
+        XCTAssertFalse(CommandClass.getResponse.isResponseExpected)
+    }
 }

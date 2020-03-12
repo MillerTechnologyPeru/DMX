@@ -28,3 +28,16 @@ public enum CommandClass: UInt8, Codable {
     /// Set Response comand
     case setResponse            = 0x31
 }
+
+public extension CommandClass {
+    
+    /// Whether a response is expected.
+    var isResponseExpected: Bool {
+        switch self {
+        case .discovery, .get, .set:
+            return true
+        case .discoveryResponse, .getResponse, .setResponse:
+            return false
+        }
+    }
+}
