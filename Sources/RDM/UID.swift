@@ -81,7 +81,8 @@ extension DeviceUID: RawRepresentable {
         guard rawValue.count == 13,
             components.count == 2,
             let manufacturerCode = UInt16(components[0], radix: 16),
-            let deviceCode = UInt32(components[1], radix: 16)
+            let deviceCode = UInt32(components[1], radix: 16),
+            rawValue.replacingOccurrences(of: String(DeviceUID.separator), with: "").count == 12
             else { return nil }
         
         self.init(manufacturer: manufacturerCode, device: deviceCode)
