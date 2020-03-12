@@ -42,17 +42,17 @@ public extension ResponseError {
 extension ResponseError: CustomNSError {
     
     /// The domain of the error.
-    static var errorDomain: String { return "org.esta.rdm.error" }
+    public static var errorDomain: String { return "org.esta.rdm.error" }
     
     /// The error code within the given domain.
-    var errorCode: Int {
+    public var errorCode: Int {
         return numericCast(rawValue)
     }
 
     /// The user-info dictionary.
-    var errorUserInfo: [String : Any] {
+    public var errorUserInfo: [String : Any] {
         
-        var userInfo: [String: Any]()
+        var userInfo = [String: Any]()
         userInfo[NSLocalizedFailureReasonErrorKey] = errorDescription
         return userInfo
     }
