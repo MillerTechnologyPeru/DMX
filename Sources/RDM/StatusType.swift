@@ -47,7 +47,23 @@ public extension StatusType {
     ///
     static var getLastMessage: StatusType { return 0x0001 } // STATUS_GET_LAST_ MESSAGE
     
-    // TODO: Complete list
+    ///
+    static var advisory: StatusType { return 0x0002 } // STATUS_ADVISORY
+    
+    ///
+    static var warning: StatusType { return 0x0003 } // STATUS_WARNING
+    
+    ///
+    static var error: StatusType { return 0x0004 } // STATUS_ERROR
+    
+    ///
+    static var advisoryCleared: StatusType { return 0x0012 } // STATUS_ADVISORY_CLEARED
+    
+    ///
+    static var warningCleared: StatusType { return 0x0013 } // STATUS_WARNING_CLEARED
+    
+    ///
+    static var errorCleared: StatusType { return 0x0014 } // STATUS_ERROR_CLEARED
 }
 
 // MARK: - Names
@@ -60,6 +76,12 @@ public extension StatusType {
     
     internal static let names: [StatusType: String] = [
         .none: "None",
-        .getLastMessage: "Get Last Message"
+        .getLastMessage: "Get Last Message",
+        .advisory: "Advisory",
+        .warning: "Warning",
+        .error: "Error",
+        .advisoryCleared: "Advisory Cleared",
+        .warningCleared: "Warning Cleared",
+        .errorCleared: "Error Cleared"
     ]
 }
