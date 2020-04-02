@@ -24,6 +24,7 @@ extension Data {
     init <T: DataConvertible> (_ value: T) {
         self.init(capacity: value.dataLength)
         self += value
+        assert(count == value.dataLength)
     }
 }
 

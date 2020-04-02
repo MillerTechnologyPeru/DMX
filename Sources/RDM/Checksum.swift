@@ -21,7 +21,7 @@ public extension Checksum {
     
     init(data: Data) {
         
-        let checksum = data.reduce(UInt16(0xCC), { $0.addingReportingOverflow(UInt16($1)).partialValue })
+        let checksum = data.reduce(UInt16(0x00), { $0.addingReportingOverflow(UInt16($1)).partialValue })
         self.init(rawValue: checksum)
     }
 }

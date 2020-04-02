@@ -38,15 +38,18 @@ public struct MessageDataBlock: Equatable, Hashable {
 
 public extension MessageDataBlock {
     
+    internal static var headerLength: Int { return 4 }
+    
     init?(data: Data) {
-        guard data.count >= 3,
+        guard data.count >= MessageDataBlock.headerLength,
             let commandClass = CommandClass(rawValue: data[0])
             else { return nil }
         
         self.commandClass = commandClass
         self.parameterID = ParameterID(rawValue: UInt16(bigEndian: UInt16(bytes: (data[1], data[2]))))
-        if data.count > 3 {
-            self.parameterData = data.suffix(from: 3)
+        let length = Int(data[3])
+        if length > 0, data.count == MessageDataBlock.headerLength + length {
+            self.parameterData = data.subdata(in: MessageDataBlock.headerLength ..< MessageDataBlock.headerLength + length)
         } else {
             self.parameterData = Data()
         }
@@ -62,12 +65,13 @@ public extension MessageDataBlock {
 extension MessageDataBlock: DataConvertible {
     
     var dataLength: Int {
-        return 3 + parameterData.count
+        return MessageDataBlock.headerLength + parameterData.count
     }
     
     static func += (data: inout Data, value: Self) {
         data += value.commandClass.rawValue
         data += value.parameterID.rawValue.bigEndian
+        data += UInt8(value.parameterData.count)
         data += value.parameterData
     }
 }
