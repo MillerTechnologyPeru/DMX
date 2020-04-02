@@ -8,7 +8,7 @@
 /// RDM Product Detail definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 106
-public struct ProductDetail: RawRepresentable, Equatable, Hashable, Codable {
+public struct ProductDetail: RawRepresentable, Equatable, Hashable {
     
     public let rawValue: UInt16
     

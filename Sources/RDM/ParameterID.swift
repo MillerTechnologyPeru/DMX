@@ -5,10 +5,14 @@
 //  Created by Alsey Coleman Miller on 3/12/20.
 //
 
-/// RDM  Categories/Parameter ID definitions
-///
-/// - SeeAlso: ANSI E1.20 – 2010, page 102, Table A-3: RDM Categories Defines
-public struct ParameterID: RawRepresentable, Equatable, Hashable, Codable {
+/**
+ The Parameter ID is a 16-bit number that identifies a specific type of Parameter Data.
+ 
+ The Parameter ID (PID) may represent either a well known Parameter such as those defined in this document, or a Manufacturer-specific parameter whose details are either published by the Manufacturer for third-party support or proprietary for the Manufacturer’s own use.
+ 
+ - SeeAlso: ANSI E1.20 – 2010, page 102, Table A-3: RDM Categories Defines
+ */
+public struct ParameterID: RawRepresentable, Equatable, Hashable {
     
     public let rawValue: UInt16
     

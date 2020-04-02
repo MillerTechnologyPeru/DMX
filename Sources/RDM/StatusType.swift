@@ -8,7 +8,7 @@
 /// RDM Status Type definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 103, Table A-4: Status Type Defines
-public struct StatusType: RawRepresentable, Equatable, Hashable, Codable {
+public struct StatusType: RawRepresentable, Equatable, Hashable {
     
     public let rawValue: UInt8
     

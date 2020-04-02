@@ -8,7 +8,7 @@
 /// RDM Transaction Number TN definition
 ///
 /// - See Also: ANSI E1.20 – 2010, page 18
-public struct TransactionNumber: RawRepresentable, Equatable, Hashable, Codable {
+public struct TransactionNumber: RawRepresentable, Equatable, Hashable {
     
     public var rawValue: UInt8
     
@@ -30,5 +30,14 @@ extension TransactionNumber: ExpressibleByIntegerLiteral {
     
     public init(integerLiteral value: UInt8) {
         self.init(rawValue: value)
+    }
+}
+
+// MARK: - CustomStringConvertible
+
+extension TransactionNumber: CustomStringConvertible {
+    
+    public var description: String {
+        return rawValue.description
     }
 }

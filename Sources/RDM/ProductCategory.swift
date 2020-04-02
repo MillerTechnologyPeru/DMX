@@ -8,7 +8,7 @@
 /// RDM Product Category definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 103 Table A-5
-public struct ProductCategory: RawRepresentable, Equatable, Hashable, Codable {
+public struct ProductCategory: RawRepresentable, Equatable, Hashable {
     
     public let rawValue: UInt16
     

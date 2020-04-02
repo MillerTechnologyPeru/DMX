@@ -8,7 +8,7 @@
 /// RDM Response Type definitions
 ///
 /// - SeeAlso: ANSI E1.20 – 2010, page 101, Table A-1: Command Class Defines
-public enum ResponseType: UInt8, Codable {
+public enum ResponseType: UInt8 {
     
     /// Acknowledgement
     case acknowledgement            = 0x00 // RESPONSE_TYPE_ACK

@@ -10,7 +10,7 @@ import Foundation
 /// RDM Response NACK Reason Code Defines
 ///
 /// - SeeAlso:  ANSI E1.20 – 2010, Page 116, Table A-17: Response NACK Reason Code Defines
-public enum ResponseError: UInt8, Codable, Error {
+public enum ResponseError: UInt8, Error {
     
     /// The responder cannot comply with request because the message is not implemented in responder.
     case unknownPID                 = 0x0000 // NR_UNKNOWN_PID

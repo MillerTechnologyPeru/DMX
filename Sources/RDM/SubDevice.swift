@@ -8,7 +8,7 @@
 /// RDM Sub Device definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 21
-public struct SubDevice: RawRepresentable, Equatable, Hashable, Codable {
+public struct SubDevice: RawRepresentable, Equatable, Hashable {
     
     public let rawValue: UInt16
     

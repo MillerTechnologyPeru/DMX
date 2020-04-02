@@ -11,7 +11,7 @@
 /// The value for these version fields are controlled by this standard and any subsequent revisions or additions to this standard as issued in the future.
 ///
 /// - SeeAlso: ANSI E1.20 – 2010, Page 57
-public struct ProtocolVersion: Equatable, Hashable, Codable {
+public struct ProtocolVersion: Equatable, Hashable {
     
     /// Major version
     public var major: UInt8

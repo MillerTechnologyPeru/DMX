@@ -8,7 +8,7 @@
 /// RDM Command Classes
 ///
 /// - SeeAlso: ANSI E1.20 – 2010, page 101, Table A-1: Command Class Defines
-public enum CommandClass: UInt8, Codable {
+public enum CommandClass: UInt8 {
     
     /// Discovery command
     case discovery              = 0x10
