@@ -7,13 +7,16 @@
 
 import Foundation
 
+/**
+ This parameter is used to collect Status or Error information from a device.
+ */
 public struct GetStatusMessages: MessageDataBlockProtocol, Equatable, Hashable {
     
     // MARK: - Properties
     
-    public static var commandClass: CommandClass { .get }
+    public static var commandClass: CommandClass { return .get }
     
-    public static var parameterID: ParameterID { .statusMessages }
+    public static var parameterID: ParameterID { return .statusMessages }
     
     public var status: StatusType
     

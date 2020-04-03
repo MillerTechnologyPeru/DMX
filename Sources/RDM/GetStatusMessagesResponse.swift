@@ -7,13 +7,16 @@
 
 import Foundation
 
+/**
+ The response is a packed list of all status messages for the device.
+ */
 public struct GetStatusMessagesResponse: MessageDataBlockProtocol, Equatable, Hashable {
     
     // MARK: - Properties
     
-    public static var commandClass: CommandClass { .getResponse }
+    public static var commandClass: CommandClass { return .getResponse }
     
-    public static var parameterID: ParameterID { .statusMessages }
+    public static var parameterID: ParameterID { return .statusMessages }
     
     public var statusMessage: [StatusMessage]
     
