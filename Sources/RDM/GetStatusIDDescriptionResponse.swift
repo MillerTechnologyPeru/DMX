@@ -31,6 +31,8 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
     }
 }
 
+// MARK: - Data
+
 public extension GetStatusIDDescriptionResponse {
     
     init?(data: Data) {
@@ -41,8 +43,28 @@ public extension GetStatusIDDescriptionResponse {
     }
     
     var data: Data {
-        guard let data = response.prefix(type(of: self).maxLength).data(using: .utf8)
+        guard let data = response
+            .prefix(type(of: self).maxLength)
+            .data(using: .utf8)
             else { fatalError("Cannot encode string to UTF8") }
         return data
+    }
+}
+
+// MARK: - ExpressibleByStringLiteral
+
+extension GetStatusIDDescriptionResponse: ExpressibleByStringLiteral {
+    
+    public init(stringLiteral value: String) {
+        self.init(response: value)
+    }
+}
+
+// MARK: - CustomStringConvertible
+
+extension GetStatusIDDescriptionResponse: CustomStringConvertible {
+    
+    public var description: String {
+        return response
     }
 }
