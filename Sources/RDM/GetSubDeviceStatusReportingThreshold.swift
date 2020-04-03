@@ -13,18 +13,11 @@ import Foundation
  
  This feature is used to inhibit reports from, for example, a specific dimmer in a rack that is generating repeated errors.
  */
-public struct GetSubDeviceStatusReportingThreshold: MessageDataBlockProtocol, Equatable, Hashable {
+public struct GetSubDeviceStatusReportingThreshold: Equatable, Hashable {
     
     // MARK: - Properties
     
     public static var commandClass: CommandClass { return .get }
     
     public static var parameterID: ParameterID { return .subDeviceStatusReport }
-}
-
-public extension GetSubDeviceStatusReportingThreshold {
-    
-    var parameterData: Data {
-        return Data()
-    }
 }

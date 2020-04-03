@@ -89,6 +89,9 @@ public protocol MessageDataBlockProtocol {
     /// Parameter ID
     static var parameterID: ParameterID { get }
     
+    /// Initialize from parameter data.
+    init?(data: Data)
+    
     /// Parameter Data
-    var parameterData: Data { get }
+    var data: Data { get }
 }

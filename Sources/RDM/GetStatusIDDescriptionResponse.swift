@@ -31,9 +31,15 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
 
 public extension GetStatusIDDescriptionResponse {
     
-    var parameterData: Data {
+    init?(data: Data) {
+        guard let string = String(data: data, encoding: .utf8)
+            else { return nil }
+        self.init(response: string)
+    }
+    
+    var data: Data {
         guard let data = response.data(using: .utf8)
-            else { return Data() }
+            else { fatalError("Cannot encode string to UTF8") }
         return data
     }
 }

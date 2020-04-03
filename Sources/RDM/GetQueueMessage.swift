@@ -34,13 +34,22 @@ public struct GetQueueMessage: MessageDataBlockProtocol, Equatable, Hashable {
     
     /// - parameter status: `StatusType.none` is not allowed to use in this packet
     public init(status: StatusType) {
+        assert(status != .none, ".none is not allowed to use in this packet")
         self.status = status
     }
 }
 
+// MARK: - Data
+
 public extension GetQueueMessage {
     
-    var parameterData: Data {
+    init?(data: Data) {
+        guard data.count == 1
+            else { return nil }
+        self.init(status: StatusType(rawValue: data[0]))
+    }
+    
+    var data: Data {
         return Data([status.rawValue])
     }
 }

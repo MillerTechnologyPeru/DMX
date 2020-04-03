@@ -131,7 +131,7 @@ public struct Packet: Equatable, Hashable {
         let dataBlock = MessageDataBlock(
             commandClass: T.commandClass,
             parameterID: T.parameterID,
-            parameterData: messageData.parameterData
+            parameterData: messageData.data
         )
         
         self.init(destination: destination,

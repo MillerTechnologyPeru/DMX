@@ -26,7 +26,13 @@ public struct SetSubDeviceStatusReportingThreshold: MessageDataBlockProtocol, Eq
 
 public extension SetSubDeviceStatusReportingThreshold {
     
-    var parameterData: Data {
+    init?(data: Data) {
+        guard data.count == 1
+            else { return nil }
+        self.init(status: StatusType(rawValue: data[0]))
+    }
+    
+    var data: Data {
         return Data([status.rawValue])
     }
 }

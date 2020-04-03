@@ -49,10 +49,10 @@ public struct StatusMessage: Equatable, Hashable {
 
 public extension StatusMessage {
     
-    internal static var headerLength: Int { return 9 }
+    internal static var length: Int { return 9 }
     
     init?(data: Data) {
-        guard data.count >= StatusMessage.headerLength
+        guard data.count == StatusMessage.length
             else { return nil }
         self.subDeviceID = SubDevice(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1]))))
         self.statusType = StatusType(rawValue: data[2])
@@ -71,7 +71,7 @@ public extension StatusMessage {
 extension StatusMessage: DataConvertible {
     
     var dataLength: Int {
-        return StatusMessage.headerLength
+        return StatusMessage.length
     }
     
     static func += (data: inout Data, value: Self) {

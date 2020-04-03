@@ -27,9 +27,19 @@ public struct GetStatusIDDescription: MessageDataBlockProtocol, Equatable, Hasha
     }
 }
 
+// MARK: - Data
+
 public extension GetStatusIDDescription {
     
-    var parameterData: Data {
+    static var length: Int { return MemoryLayout<StatusMessageID>.size }
+    
+    init?(data: Data) {
+        guard data.count == type(of: self).length
+            else { return nil }
+        self.init(statusID: StatusMessageID(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))))
+    }
+    
+    var data: Data {
         return Data([statusID.rawValue.bigEndian.bytes.0,
                      statusID.rawValue.bigEndian.bytes.1])
     }

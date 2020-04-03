@@ -7,18 +7,11 @@
 
 import Foundation
 
-public struct ClearStatusIDResponse: MessageDataBlockProtocol, Equatable, Hashable {
+public struct ClearStatusIDResponse: Equatable, Hashable {
     
     // MARK: - Properties
     
     public static var commandClass: CommandClass { return .setResponse }
     
     public static var parameterID: ParameterID { return .clearStatusId }
-}
-
-public extension ClearStatusIDResponse {
-    
-    var parameterData: Data {
-        return Data()
-    }
 }

@@ -7,18 +7,11 @@
 
 import Foundation
 
-public struct SetSubDeviceStatusReportingThresholdResponse: MessageDataBlockProtocol, Equatable, Hashable {
+public struct SetSubDeviceStatusReportingThresholdResponse: Equatable, Hashable {
     
     // MARK: - Properties
     
     public static var commandClass: CommandClass { return .setResponse }
     
     public static var parameterID: ParameterID { return .subDeviceStatusReport }
-}
-
-public extension SetSubDeviceStatusReportingThresholdResponse {
-    
-    var parameterData: Data {
-        return Data()
-    }
 }

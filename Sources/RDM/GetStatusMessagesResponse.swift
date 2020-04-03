@@ -31,10 +31,19 @@ public struct GetStatusMessagesResponse: MessageDataBlockProtocol, Equatable, Ha
 
 public extension GetStatusMessagesResponse {
     
-    var parameterData: Data {
-        return statusMessage
-            .map { $0.data }
-            .reduce(into: Data(), { $0.append($1) })
+    init?(data: Data) {
+        guard data.count % StatusMessage.length == 0
+            else { return nil }
+        let count = data.count / StatusMessage.length
+        let messages = (0 ..< count)
+            .map { $0 * StatusMessage.length ..< ($0 + 1) * StatusMessage.length }
+            .compactMap { StatusMessage(data: data.subdataNoCopy(in: $0)) }
+        assert(messages.count == count)
+        self.init(statusMessage: messages)
+    }
+    
+    var data: Data {
+        return Data(self)
     }
 }
 
@@ -43,7 +52,7 @@ public extension GetStatusMessagesResponse {
 extension GetStatusMessagesResponse: DataConvertible {
     
     var dataLength: Int {
-        return statusMessage.reduce(0, { $0 + $1.dataLength })
+        return statusMessage.count * StatusMessage.length
     }
     
     static func += (data: inout Data, value: GetStatusMessagesResponse) {
