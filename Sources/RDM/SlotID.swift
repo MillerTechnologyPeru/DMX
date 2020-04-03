@@ -31,7 +31,7 @@ public struct SlotID: RawRepresentable, Equatable, Hashable {
 extension SlotID: CustomStringConvertible {
     
     public var description: String {
-        return name ?? rawValue.description
+        return name ?? "0x" + rawValue.toHexadecimal()
     }
 }
 

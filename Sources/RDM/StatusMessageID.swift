@@ -28,7 +28,7 @@ public struct StatusMessageID: RawRepresentable, Equatable, Hashable {
 extension StatusMessageID: CustomStringConvertible {
     
     public var description: String {
-        return name ?? rawValue.description
+        return name ?? "0x" + rawValue.toHexadecimal()
     }
 }
 
