@@ -27,11 +27,26 @@ public struct GetStatusMessagesResponse: MessageDataBlockProtocol, Equatable, Ha
     }
 }
 
+// MARK: - Data
+
 public extension GetStatusMessagesResponse {
     
     var parameterData: Data {
         return statusMessage
-            .map{ $0.data }
-            .reduce(into: Data(), { $0.append( $1 ) })
+            .map { $0.data }
+            .reduce(into: Data(), { $0.append($1) })
+    }
+}
+
+// MARK: - DataConvertible
+
+extension GetStatusMessagesResponse: DataConvertible {
+    
+    var dataLength: Int {
+        return statusMessage.reduce(0, { $0 + $1.dataLength })
+    }
+    
+    static func += (data: inout Data, value: GetStatusMessagesResponse) {
+        value.statusMessage.forEach { data += $0 }
     }
 }
