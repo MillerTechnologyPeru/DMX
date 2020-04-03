@@ -18,6 +18,8 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
     
     public static var parameterID: ParameterID { return .statusIdDescription }
     
+    public static var maxLength: Int { return 32 }
+    
     public var response: String
     
     // MARK: - Initialization
@@ -32,13 +34,14 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
 public extension GetStatusIDDescriptionResponse {
     
     init?(data: Data) {
-        guard let string = String(data: data, encoding: .utf8)
+        guard data.count <= type(of: self).maxLength,
+            let string = String(data: data, encoding: .utf8)
             else { return nil }
         self.init(response: string)
     }
     
     var data: Data {
-        guard let data = response.data(using: .utf8)
+        guard let data = response.prefix(type(of: self).maxLength).data(using: .utf8)
             else { fatalError("Cannot encode string to UTF8") }
         return data
     }
