@@ -80,13 +80,27 @@ public extension MessageDataBlock {
         if length > 0 {
             guard data.count == MessageDataBlock.headerLength + length
                 else { return nil }
-            parameterData = data.subdata(in: MessageDataBlock.headerLength ..< MessageDataBlock.headerLength + length)
-            
+            parameterData = data.subdataNoCopy(in: MessageDataBlock.headerLength ..< MessageDataBlock.headerLength + length)
         } else {
             parameterData = Data()
         }
-        // TODO:
-        fatalError()
+        switch (commandClass, parameterID) {
+        case (GetStatusMessages.commandClass, GetStatusMessages.parameterID):
+            guard let value = GetStatusMessages(data: parameterData)
+                else { return nil }
+            self = .getStatusMessages(value)
+        case (GetStatusMessagesResponse.commandClass, GetStatusMessagesResponse.parameterID):
+            guard let value = GetStatusMessagesResponse(data: parameterData)
+                else { return nil }
+            self = .getStatusMessagesResponse(value)
+        case (.set, .clearStatusId):
+            self = .clearStatusID
+        case (.get, .subDeviceStatusReport):
+            self = .getSubDeviceStatusReportingThreshold
+        // TODO: Finish parsing
+        default:
+            return nil
+        }
     }
     
     var data: Data {
