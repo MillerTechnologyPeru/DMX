@@ -18,7 +18,11 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getStatusIDDescription(GetStatusIDDescription)
     case getStatusIDDescriptionResponse(GetStatusIDDescriptionResponse)
     case clearStatusID
+    case clearStatusIDResponse
     case getSubDeviceStatusReportingThreshold
+    case getSubDeviceStatusReportingThresholdResponse(GetSubDeviceStatusReportingThresholdResponse)
+    case setSubDeviceStatusReportingThreshold(SetSubDeviceStatusReportingThreshold)
+    case setSubDeviceStatusReportingThresholdResponse
 }
 
 // MARK: - Properties
@@ -39,8 +43,16 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .clearStatusID:
             return .set
+        case .clearStatusIDResponse:
+            return .setResponse
         case .getSubDeviceStatusReportingThreshold:
             return .get
+        case let .getSubDeviceStatusReportingThresholdResponse(value):
+            return type(of: value).commandClass
+        case let .setSubDeviceStatusReportingThreshold(value):
+            return type(of: value).commandClass
+        case .setSubDeviceStatusReportingThresholdResponse:
+            return .setResponse
         }
     }
     
@@ -58,7 +70,15 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .clearStatusID:
             return .clearStatusId
+        case .clearStatusIDResponse:
+            return .clearStatusId
         case .getSubDeviceStatusReportingThreshold:
+            return .subDeviceStatusReport
+        case let .getSubDeviceStatusReportingThresholdResponse(value):
+            return type(of: value).parameterID
+        case let .setSubDeviceStatusReportingThreshold(value):
+            return type(of: value).parameterID
+        case .setSubDeviceStatusReportingThresholdResponse:
             return .subDeviceStatusReport
         }
     }
@@ -95,9 +115,20 @@ public extension MessageDataBlock {
             self = .getStatusMessagesResponse(value)
         case (.set, .clearStatusId):
             self = .clearStatusID
+        case (.setResponse, .clearStatusId):
+            self = .clearStatusID
         case (.get, .subDeviceStatusReport):
             self = .getSubDeviceStatusReportingThreshold
-        // TODO: Finish parsing
+        case (GetSubDeviceStatusReportingThresholdResponse.commandClass, GetSubDeviceStatusReportingThresholdResponse.parameterID):
+            guard let value = GetSubDeviceStatusReportingThresholdResponse(data: parameterData)
+                else { return nil }
+            self = .getSubDeviceStatusReportingThresholdResponse(value)
+        case (SetSubDeviceStatusReportingThreshold.commandClass, SetSubDeviceStatusReportingThreshold.parameterID):
+            guard let value = SetSubDeviceStatusReportingThreshold(data: parameterData)
+                else { return nil }
+            self = .setSubDeviceStatusReportingThreshold(value)
+        case (.setResponse, .subDeviceStatusReport):
+            self = .setSubDeviceStatusReportingThresholdResponse
         default:
             return nil
         }
@@ -135,7 +166,13 @@ internal extension MessageDataBlock {
         case let .getStatusIDDescriptionResponse(value): return value.dataLength
         case .clearStatusID:
             return 0
-         case .getSubDeviceStatusReportingThreshold:
+        case .clearStatusIDResponse:
+            return 0
+        case .getSubDeviceStatusReportingThreshold:
+            return 0
+        case let .getSubDeviceStatusReportingThresholdResponse(value): return value.dataLength
+        case let .setSubDeviceStatusReportingThreshold(value): return value.dataLength
+        case .setSubDeviceStatusReportingThresholdResponse:
             return 0
         }
     }
@@ -154,7 +191,15 @@ internal extension MessageDataBlock {
             data += value
         case .clearStatusID:
             break
+        case .clearStatusIDResponse:
+            break
         case .getSubDeviceStatusReportingThreshold:
+            break
+        case let .getSubDeviceStatusReportingThresholdResponse(value):
+            data += value
+        case let .setSubDeviceStatusReportingThreshold(value):
+            data += value
+        case .setSubDeviceStatusReportingThresholdResponse:
             break
         }
     }
