@@ -31,7 +31,7 @@ public struct GetStatusIDDescription: MessageDataBlockProtocol, Equatable, Hasha
 
 public extension GetStatusIDDescription {
     
-    static var length: Int { return MemoryLayout<StatusMessageID>.size }
+    internal static var length: Int { return MemoryLayout<StatusMessageID>.size }
     
     init?(data: Data) {
         guard data.count == type(of: self).length
@@ -40,7 +40,19 @@ public extension GetStatusIDDescription {
     }
     
     var data: Data {
-        return Data([statusID.rawValue.bigEndian.bytes.0,
-                     statusID.rawValue.bigEndian.bytes.1])
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension GetStatusIDDescription: DataConvertible {
+    
+    var dataLength: Int {
+        return type(of: self).length
+    }
+    
+    static func += (data: inout Data, value: GetStatusIDDescription) {
+        data += value.statusID.rawValue
     }
 }

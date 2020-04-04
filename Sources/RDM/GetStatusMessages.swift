@@ -27,15 +27,32 @@ public struct GetStatusMessages: MessageDataBlockProtocol, Equatable, Hashable {
     }
 }
 
+// MARK: - Data
+
 public extension GetStatusMessages {
     
+    internal static var length: Int { return MemoryLayout<StatusType>.size }
+    
     init?(data: Data) {
-        guard data.count == 1
+        guard data.count == type(of: self).length
             else { return nil }
         self.init(status: StatusType(rawValue: data[0]))
     }
     
     var data: Data {
-        return Data([status.rawValue])
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension GetStatusMessages: DataConvertible {
+    
+    var dataLength: Int {
+        return type(of: self).length
+    }
+    
+    static func += (data: inout Data, value: GetStatusMessages) {
+        data += value.status.rawValue
     }
 }

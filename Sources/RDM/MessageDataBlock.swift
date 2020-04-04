@@ -78,6 +78,8 @@ extension MessageDataBlock: DataConvertible {
 
 // MARK: - Supporting Types
 
+// MARK: - Protocol
+
 /**
   RDM Message Data Block Protocol
 */
@@ -94,4 +96,52 @@ public protocol MessageDataBlockProtocol {
     
     /// Parameter Data
     var data: Data { get }
+}
+
+// MARK: - ParameterData
+
+public extension MessageDataBlock {
+    
+    /// RDM Messsage Data Block Parameter Data
+    enum ParameterData {
+        
+        case getStatusMessages(GetStatusMessages)
+        case getStatusMessagesResponse(GetStatusMessagesResponse)
+        case getQueueMessage(GetQueueMessage)
+        case getStatusIDDescription(GetStatusIDDescription)
+        case getStatusIDDescriptionResponse(GetStatusIDDescriptionResponse)
+        case clearStatusID
+        case getSubDeviceStatusReportingThreshold
+    }
+}
+
+// MARK: DataConvertible
+
+extension MessageDataBlock.ParameterData: DataConvertible {
+    
+    public var dataLength: Int {
+        switch self {
+        case let .getStatusMessages(value): return value.dataLength
+        case let .getStatusMessagesResponse(value): return value.dataLength
+        case let .getQueueMessage(value): return value.dataLength
+        case let .getStatusIDDescription(value): return value.dataLength
+        case let .getStatusIDDescriptionResponse(value): return value.dataLength
+        case .clearStatusID,
+             .getSubDeviceStatusReportingThreshold:
+            return 0
+        }
+    }
+    
+    public static func += (data: inout Data, value: MessageDataBlock.ParameterData) {
+        switch value {
+        case let .getStatusMessages(value): data += value
+        case let .getStatusMessagesResponse(value): data += value
+        case let .getQueueMessage(value): data += value
+        case let .getStatusIDDescription(value): data += value
+        case let .getStatusIDDescriptionResponse(value): data += value
+        case .clearStatusID,
+             .getSubDeviceStatusReportingThreshold:
+            break
+        }
+    }
 }

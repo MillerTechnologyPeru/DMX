@@ -20,14 +20,15 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
     
     public static var maxLength: Int { return 32 }
     
-    public var response: String
+    public let response: String
     
     // MARK: - Initialization
     
     /// - parameter response: ASCII text description
     /// - SeeAlso: `StatusMessage.Description`
     public init(response: String) {
-        self.response = response
+        let maxLength = type(of: self).maxLength
+        self.response = response.count > maxLength ? String(response.prefix(type(of: self).maxLength)) : response
     }
 }
 
@@ -43,13 +44,26 @@ public extension GetStatusIDDescriptionResponse {
     }
     
     var data: Data {
-        guard let data = response
-            .prefix(type(of: self).maxLength)
-            .data(using: .utf8)
-            else { fatalError("Cannot encode string to UTF8") }
-        return data
+        return Data(self)
     }
 }
+
+// MARK: - DataConvertible
+
+extension GetStatusIDDescriptionResponse: DataConvertible {
+    
+    var dataLength: Int {
+        return response.utf8.count
+    }
+    
+    static func += (data: inout Data, value: GetStatusIDDescriptionResponse) {
+        let utf8 = value.response
+            .prefix(type(of: value).maxLength)
+            .utf8
+        data.append(contentsOf: utf8)
+    }
+}
+
 
 // MARK: - ExpressibleByStringLiteral
 

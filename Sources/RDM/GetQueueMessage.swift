@@ -34,7 +34,7 @@ public struct GetQueueMessage: MessageDataBlockProtocol, Equatable, Hashable {
     
     /// - parameter status: `StatusType.none` is not allowed to use in this packet
     public init(status: StatusType) {
-        assert(status != .none, ".none is not allowed to use in this packet")
+        assert(status != .none, ".none is not allowed for use in this packet")
         self.status = status
     }
 }
@@ -43,13 +43,28 @@ public struct GetQueueMessage: MessageDataBlockProtocol, Equatable, Hashable {
 
 public extension GetQueueMessage {
     
+    internal static var length: Int { return MemoryLayout<StatusType>.size }
+    
     init?(data: Data) {
-        guard data.count == 1
+        guard data.count == type(of: self).length
             else { return nil }
         self.init(status: StatusType(rawValue: data[0]))
     }
     
     var data: Data {
-        return Data([status.rawValue])
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension GetQueueMessage: DataConvertible {
+    
+    var dataLength: Int {
+        return type(of: self).length
+    }
+    
+    static func += (data: inout Data, value: GetQueueMessage) {
+        data += value.status.rawValue
     }
 }

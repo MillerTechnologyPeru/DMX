@@ -34,13 +34,28 @@ public struct GetSubDeviceStatusReportingThresholdResponse: MessageDataBlockProt
 
 public extension GetSubDeviceStatusReportingThresholdResponse {
     
+    internal static var length: Int { return MemoryLayout<StatusType>.size }
+    
     init?(data: Data) {
-        guard data.count == 1
+        guard data.count == type(of: self).length
             else { return nil }
         self.init(status: StatusType(rawValue: data[0]))
     }
     
     var data: Data {
-        return Data([status.rawValue])
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension GetSubDeviceStatusReportingThresholdResponse: DataConvertible {
+    
+    var dataLength: Int {
+        return type(of: self).length
+    }
+    
+    static func += (data: inout Data, value: GetSubDeviceStatusReportingThresholdResponse) {
+        data += value.status.rawValue
     }
 }
