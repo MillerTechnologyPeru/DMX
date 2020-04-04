@@ -118,31 +118,6 @@ public struct Packet: Equatable, Hashable {
         // calculate checksum
         self.checksum = Checksum(data: dataWithoutChecksum)
     }
-    
-    /// Initialize RDM Packet with Message Data Block value.
-    public init <T> (destination: DeviceUID,
-                     source: DeviceUID,
-                     transaction: TransactionNumber,
-                     typeField: UInt8,
-                     messageCount: UInt8,
-                     subDevice: SubDevice,
-                     messageData: T) where T: MessageDataBlockProtocol {
-        
-        let dataBlock = MessageDataBlock(
-            commandClass: T.commandClass,
-            parameterID: T.parameterID,
-            parameterData: messageData.data
-        )
-        
-        self.init(destination: destination,
-                  source: source,
-                  transaction: transaction,
-                  typeField: typeField,
-                  messageCount: messageCount,
-                  subDevice: subDevice,
-                  messageData: dataBlock
-        )
-    }
 }
 
 // MARK: - Methods

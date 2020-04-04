@@ -35,7 +35,7 @@ final class RDMMessageTest: XCTestCase {
             typeField: 0x01,
             messageCount: 0x00,
             subDevice: .root,
-            messageData: GetStatusMessages(status: .error)
+            messageData: .getStatusMessages(.init(status: .error))
         )
         
         XCTAssertEqual(packet.data, data)
@@ -86,7 +86,8 @@ final class RDMMessageTest: XCTestCase {
             typeField: 0x01,
             messageCount: 8,
             subDevice: .root,
-            messageData: GetStatusMessagesResponse(statusMessage: statusMessages))
+            messageData: .getStatusMessagesResponse(.init(statusMessage: statusMessages))
+        )
         
         XCTAssertEqual(packet.data, data)
         XCTAssertEqual(packet.data.count, 53)
