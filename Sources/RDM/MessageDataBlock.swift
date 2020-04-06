@@ -23,6 +23,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSubDeviceStatusReportingThresholdResponse(GetSubDeviceStatusReportingThresholdResponse)
     case setSubDeviceStatusReportingThreshold(SetSubDeviceStatusReportingThreshold)
     case setSubDeviceStatusReportingThresholdResponse
+    case getSupportedParameters
+    case getSupportedParametersResponse(GetSupportedParametersResponse)
 }
 
 // MARK: - Properties
@@ -53,6 +55,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setSubDeviceStatusReportingThresholdResponse:
             return .setResponse
+        case .getSupportedParameters:
+            return .getResponse
+        case let .getSupportedParametersResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -80,6 +86,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setSubDeviceStatusReportingThresholdResponse:
             return .subDeviceStatusReport
+        case .getSupportedParameters:
+            return .supportedParameters
+        case let .getSupportedParametersResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -129,6 +139,12 @@ public extension MessageDataBlock {
             self = .setSubDeviceStatusReportingThreshold(value)
         case (.setResponse, .subDeviceStatusReport):
             self = .setSubDeviceStatusReportingThresholdResponse
+        case (.get, .supportedParameters):
+            self = .getSupportedParameters
+        case (GetSupportedParametersResponse.commandClass, GetSupportedParametersResponse.parameterID):
+            guard let value = GetSupportedParametersResponse(data: parameterData)
+                else { return nil }
+            self = .getSupportedParametersResponse(value)
         default:
             return nil
         }
@@ -174,6 +190,9 @@ internal extension MessageDataBlock {
         case let .setSubDeviceStatusReportingThreshold(value): return value.dataLength
         case .setSubDeviceStatusReportingThresholdResponse:
             return 0
+        case .getSupportedParameters:
+            return 0
+        case let .getSupportedParametersResponse(value): return value.dataLength
         }
     }
     
@@ -201,6 +220,10 @@ internal extension MessageDataBlock {
             data += value
         case .setSubDeviceStatusReportingThresholdResponse:
             break
+        case .getSupportedParameters:
+            break
+        case let .getSupportedParametersResponse(value):
+            data += value
         }
     }
 }

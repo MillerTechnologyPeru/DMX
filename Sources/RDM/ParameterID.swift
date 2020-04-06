@@ -5,6 +5,8 @@
 //  Created by Alsey Coleman Miller on 3/12/20.
 //
 
+import Foundation
+
 /**
  The Parameter ID is a 16-bit number that identifies a specific type of Parameter Data.
  
@@ -426,4 +428,34 @@ public extension ParameterID {
         .dmxStartAddress,
         .identifyDevice
     ]
+}
+
+// MARK: - Data
+
+public extension ParameterID {
+    
+    internal static var length: Int { return MemoryLayout<ParameterID>.size }
+    
+    init?(data: Data) {
+        guard data.count == ParameterID.length
+            else { return nil }
+        self.rawValue = UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))
+    }
+    
+    var data: Data {
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension ParameterID: DataConvertible {
+    
+    var dataLength: Int {
+        return ParameterID.length
+    }
+    
+    static func += (data: inout Data, value: Self) {
+        data += value.rawValue.bigEndian
+    }
 }
