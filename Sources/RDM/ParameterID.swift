@@ -41,6 +41,15 @@ extension ParameterID: ExpressibleByIntegerLiteral {
     }
 }
 
+// MARK: - Comparable
+
+extension ParameterID: Comparable {
+    
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+}
+
 // MARK: - Definitions
 
 public extension ParameterID {
@@ -243,7 +252,7 @@ public extension ParameterID {
     /// ESTA Reserved Future RDM Development        `0x7FE0 - 0x7FFF`
     
     /// Manufacturer-Specific PIDs                                `0x8000 - 0xFFDF`
-    static var manufacturerSpecific: Range<UInt16> { return 0x8000 ..< 0xFFE0 }
+    static var manufacturerSpecific: Range<ParameterID> { return 0x8000 ..< 0xFFE0 }
     
     /// ESTA Reserved Future RDM Development        `0xFFE0 - 0xFFFF`
 }

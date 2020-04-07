@@ -19,13 +19,13 @@ public struct GetParameterDescription: MessageDataBlockProtocol, Equatable, Hash
     
     public static var parameterID: ParameterID { return .parameterDescription }
     
-    public var parameterID: ParameterID
+    public let parameterID: ParameterID
     
     // MARK: - Initialization
     
     /// - parameter parameterID: The manufacturer specific PID requested by the controller. Range `0x8000 to 0xFFDF`.
     public init(parameterID: ParameterID) {
-        assert(ParameterID.manufacturerSpecific.contains(parameterID.rawValue))
+        assert(ParameterID.manufacturerSpecific.contains(parameterID))
         self.parameterID = parameterID
     }
 }

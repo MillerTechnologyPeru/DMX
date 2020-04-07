@@ -106,9 +106,9 @@ extension ParameterDescription {
         guard data.count > type(of: self).minLength, data.count <= type(of: self).maxLength
             else { return nil }
         let descriptionLength = data.count - type(of: self).minLength
-        let parameterIDRawValue = UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))
-        assert(ParameterID.manufacturerSpecific.contains(parameterIDRawValue))
-        self.pidRequested = ParameterID(rawValue: parameterIDRawValue)
+        let parameterID = ParameterID(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1]))))
+        assert(ParameterID.manufacturerSpecific.contains(parameterID))
+        self.pidRequested = parameterID
         self.pldSize = data[2]
         self.dataType = DataType(rawValue: data[3])
         guard let pdCommandClass = ParameterDescriptionCommandClass(rawValue: data[4])
