@@ -53,6 +53,6 @@ extension GetStatusIDDescription: DataConvertible {
     }
     
     static func += (data: inout Data, value: GetStatusIDDescription) {
-        data += value.statusID.rawValue
+        data += value.statusID.rawValue.bigEndian
     }
 }

@@ -134,6 +134,18 @@ public extension MessageDataBlock {
             guard let value = GetStatusMessagesResponse(data: parameterData)
                 else { return nil }
             self = .getStatusMessagesResponse(value)
+        case (GetQueueMessage.commandClass, GetQueueMessage.parameterID):
+            guard let value = GetQueueMessage(data: parameterData)
+                else { return nil }
+            self = .getQueueMessage(value)
+        case (GetStatusIDDescription.commandClass, GetStatusIDDescription.parameterID):
+            guard let value = GetStatusIDDescription(data: parameterData)
+                else { return nil }
+            self = .getStatusIDDescription(value)
+        case (GetStatusIDDescriptionResponse.commandClass, GetStatusIDDescriptionResponse.parameterID):
+        guard let value = GetStatusIDDescriptionResponse(data: parameterData)
+            else { return nil }
+        self = .getStatusIDDescriptionResponse(value)
         case (.set, .clearStatusId):
             self = .clearStatusID
         case (.setResponse, .clearStatusId):
