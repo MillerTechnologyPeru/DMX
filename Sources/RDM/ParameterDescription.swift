@@ -77,7 +77,7 @@ public struct ParameterDescription: Equatable, Hashable {
                 maxValidValue: UInt32,
                 maxDefaultValue: UInt32,
                 description: String) {
-        
+        assert(ParameterID.manufacturerSpecific.contains(pidRequested))
         self.pidRequested = pidRequested
         self.pldSize = pldSize
         self.dataType = dataType
@@ -122,7 +122,7 @@ extension ParameterDescription {
         self.maxValidValue = UInt32(bigEndian: UInt32(bytes: (data[12], data[13], data[14], data[15])))
         self.maxDefaultValue = UInt32(bigEndian: UInt32(bytes: (data[16], data[17], data[18], data[19])))
         if descriptionLength > 0 {
-            guard let string = String(data: data.subdataNoCopy(in: descriptionLength ..< data.count), encoding: .utf8)
+            guard let string = String(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count), encoding: .utf8)
                 else { return nil }
             self.description = string
         } else {
@@ -147,6 +147,7 @@ extension ParameterDescription: DataConvertible {
         data += value.pidRequested.rawValue.bigEndian
         data += value.pldSize
         data += value.dataType.rawValue
+        data += value.commandClass.rawValue
         data += value.filler
         data += value.unit.rawValue
         data += value.prefix.rawValue

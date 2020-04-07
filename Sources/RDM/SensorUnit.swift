@@ -204,7 +204,7 @@ public extension SensorUnit {
         .voltsDC: "Volts DC",
         .voltsACPeak: "Volts AC Peak",
         .voltsACRms: "Volts AC RMS",
-        .ampereACRms: "Ampere DC",
+        .ampereDC: "Ampere DC",
         .ampereACPeak: "Ampere AC Peak",
         .ampereACRms: "Ampere AC RMS",
         .hertz: "Hertz",
