@@ -243,6 +243,7 @@ public extension ParameterID {
     /// ESTA Reserved Future RDM Development        `0x7FE0 - 0x7FFF`
     
     /// Manufacturer-Specific PIDs                                `0x8000 - 0xFFDF`
+    static var manufacturerSpecific: Range<UInt16> { return 0x8000 ..< 0xFFE0 }
     
     /// ESTA Reserved Future RDM Development        `0xFFE0 - 0xFFFF`
 }

@@ -25,6 +25,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setSubDeviceStatusReportingThresholdResponse
     case getSupportedParameters
     case getSupportedParametersResponse(GetSupportedParametersResponse)
+    case getParameterDescription(GetParameterDescription)
+    case getParameterDescriptionResponse(GetParameterDescriptionResponse)
 }
 
 // MARK: - Properties
@@ -59,6 +61,10 @@ public extension MessageDataBlock {
             return .getResponse
         case let .getSupportedParametersResponse(value):
             return type(of: value).commandClass
+        case let .getParameterDescription(value):
+            return type(of: value).commandClass
+        case let .getParameterDescriptionResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -90,6 +96,11 @@ public extension MessageDataBlock {
             return .supportedParameters
         case let .getSupportedParametersResponse(value):
             return type(of: value).parameterID
+        case let .getParameterDescription(value):
+            return type(of: value).parameterID
+        case let .getParameterDescriptionResponse(value):
+            return type(of: value).parameterID
+        
         }
     }
 }
@@ -145,6 +156,14 @@ public extension MessageDataBlock {
             guard let value = GetSupportedParametersResponse(data: parameterData)
                 else { return nil }
             self = .getSupportedParametersResponse(value)
+        case (GetParameterDescription.commandClass, GetParameterDescription.parameterID):
+        guard let value = GetParameterDescription(data: parameterData)
+            else { return nil }
+        self = .getParameterDescription(value)
+        case (GetParameterDescriptionResponse.commandClass, GetParameterDescriptionResponse.parameterID):
+        guard let value = GetParameterDescriptionResponse(data: parameterData)
+            else { return nil }
+        self = .getParameterDescriptionResponse(value)
         default:
             return nil
         }
@@ -193,6 +212,8 @@ internal extension MessageDataBlock {
         case .getSupportedParameters:
             return 0
         case let .getSupportedParametersResponse(value): return value.dataLength
+        case let .getParameterDescription(value): return value.dataLength
+        case let .getParameterDescriptionResponse(value): return value.dataLength
         }
     }
     
@@ -223,6 +244,10 @@ internal extension MessageDataBlock {
         case .getSupportedParameters:
             break
         case let .getSupportedParametersResponse(value):
+            data += value
+        case let .getParameterDescription(value):
+            data += value
+        case let .getParameterDescriptionResponse(value):
             data += value
         }
     }
