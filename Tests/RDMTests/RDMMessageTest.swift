@@ -14,7 +14,8 @@ final class RDMMessageTest: XCTestCase {
     static let allTests = [
         ("testDataCheckSum", testDataCheckSum),
         ("testGetStatusMessages", testGetStatusMessages),
-        ("testGetStatusMessagesResponse", testGetStatusMessagesResponse)
+        ("testGetStatusMessagesResponse", testGetStatusMessagesResponse),
+        ("testGetStatusIDDescription",testGetStatusIDDescription),
     ]
     
     func testDataCheckSum() {
@@ -100,5 +101,36 @@ final class RDMMessageTest: XCTestCase {
             else { XCTFail("Could not parse packet"); return }
         
         XCTAssertEqual(packet, decodedPacket)
+    }
+    
+    func testGetStatusIDDescription() {
+        
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x31, 0x02, 0x00, 0x50, 0x06, 0xB9])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            typeField: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getStatusIDDescription(.init(statusID: StatusMessageID.ready))
+        )
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
     }
 }
