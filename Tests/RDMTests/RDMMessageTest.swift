@@ -18,7 +18,11 @@ final class RDMMessageTest: XCTestCase {
         ("testGetStatusIDDescription",testGetStatusIDDescription),
         ("testGetStatusIDDescriptionResponse",testGetStatusIDDescriptionResponse),
         ("testClearStatusID",testClearStatusID),
-        ("testClearStatusIDResponse",testClearStatusIDResponse)
+        ("testClearStatusIDResponse",testClearStatusIDResponse),
+        ("testGetSubDeviceStatusReportingThreshold",testGetSubDeviceStatusReportingThreshold),
+        ("testGetSubDeviceStatusReportingThresholdResponse",testGetSubDeviceStatusReportingThreshold),
+        ("testSetSubDeviceStatusReportingThreshold",testSetSubDeviceStatusReportingThreshold),
+        ("testSetSubDeviceStatusReportingThresholdResponse",testSetSubDeviceStatusReportingThreshold)
     ]
     
     func testDataCheckSum() {
@@ -225,6 +229,122 @@ final class RDMMessageTest: XCTestCase {
             else { XCTFail("Could not parse Message Data Block"); return }
         dump(messageData)
         XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSubDeviceStatusReportingThreshold() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x33, 0x00, 0x06, 0x67])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            typeField: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSubDeviceStatusReportingThreshold
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        XCTAssertEqual(packet.data.count, 26)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSubDeviceStatusReportingThresholdResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x33, 0x01, 0x00, 0x06, 0x69])
+
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            typeField: ResponseType.acknowledgement.rawValue,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSubDeviceStatusReportingThresholdResponse(.init(status: .none))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        XCTAssertEqual(packet.data.count, 27)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetSubDeviceStatusReportingThreshold() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x00, 0x33, 0x01, 0x01, 0x06, 0x7A])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            typeField: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setSubDeviceStatusReportingThreshold(.init(status: .getLastMessage))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        XCTAssertEqual(packet.data.count, 27)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetSubDeviceStatusReportingThresholdResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0x33, 0x00, 0x06, 0x77])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            typeField: ResponseType.acknowledgement.rawValue,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setSubDeviceStatusReportingThresholdResponse
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        XCTAssertEqual(packet.data.count, 26)
         
         guard let decodedPacket = RDM.Packet(data: data)
             else { XCTFail("Could not parse packet"); return }
