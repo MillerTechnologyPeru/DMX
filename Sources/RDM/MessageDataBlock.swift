@@ -149,7 +149,7 @@ public extension MessageDataBlock {
         case (.set, .clearStatusId):
             self = .clearStatusID
         case (.setResponse, .clearStatusId):
-            self = .clearStatusID
+            self = .clearStatusIDResponse
         case (.get, .subDeviceStatusReport):
             self = .getSubDeviceStatusReportingThreshold
         case (GetSubDeviceStatusReportingThresholdResponse.commandClass, GetSubDeviceStatusReportingThresholdResponse.parameterID):
