@@ -58,7 +58,7 @@ public extension MessageDataBlock {
         case .setSubDeviceStatusReportingThresholdResponse:
             return .setResponse
         case .getSupportedParameters:
-            return .getResponse
+            return .get
         case let .getSupportedParametersResponse(value):
             return type(of: value).commandClass
         case let .getParameterDescription(value):
