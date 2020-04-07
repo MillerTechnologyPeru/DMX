@@ -8,12 +8,36 @@
 /// RDM Product Category definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 103 Table A-5
-public struct ProductCategory: RawRepresentable, Equatable, Hashable {
+public struct ProductCategory: Equatable, Hashable {
     
-    public let rawValue: UInt16
+    // MARK: - Properties
+    
+    /// Coarse Product Category
+    public var coarse: UInt8
+    
+    /// Fine Product Category
+    public var fine: UInt8
+    
+    // MARK: - Initialization
+    
+    /// Initialize with major and minor versions
+    init(coarse: UInt8, fine: UInt8) {
+        self.coarse = coarse
+        self.fine = fine
+    }
+}
+
+extension ProductCategory: RawRepresentable {
+    
+    public var rawValue: UInt16 {
+        return UInt16(bigEndian: UInt16(bytes: (coarse, fine)))
+    }
+    
+    // MARK: - Initialization
     
     public init(rawValue: UInt16) {
-        self.rawValue = rawValue
+        let bytes = rawValue.bigEndian.bytes
+        self.init(coarse: bytes.0, fine: bytes.1)
     }
 }
 

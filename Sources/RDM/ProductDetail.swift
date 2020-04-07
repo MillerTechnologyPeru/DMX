@@ -10,7 +10,11 @@
 /// - See Also: ANSI E1.20 – 2010, page 106
 public struct ProductDetail: RawRepresentable, Equatable, Hashable {
     
+    // MARK: - Properties
+    
     public let rawValue: UInt16
+    
+    // MARK: - Initialization
     
     public init(rawValue: UInt16) {
         self.rawValue = rawValue
