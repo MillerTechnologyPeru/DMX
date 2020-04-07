@@ -110,9 +110,9 @@ extension StatusMessage: CustomStringConvertible {
         case .watts: return "\(Int(dataValue1)) Watts"
         case .dimmerFailure: return "Dimmer Failure"
         case .dimmerPanic: return "Panic Mode"
-        case .ready: return "\(SlotID(rawValue: dataValue1)) ready"
-        case .notReady: return "\(SlotID(rawValue: dataValue1)) not ready"
-        case .lowFluid: return "\(SlotID(rawValue: dataValue1)) low fluid"
+        case .ready: return "\(SlotID(rawValue: dataValue1).description) ready"
+        case .notReady: return "\(SlotID(rawValue: dataValue1).description) not ready"
+        case .lowFluid: return "\(SlotID(rawValue: dataValue1).description) low fluid"
         default: return ""
         }
     }
