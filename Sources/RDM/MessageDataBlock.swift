@@ -27,6 +27,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSupportedParametersResponse(GetSupportedParametersResponse)
     case getParameterDescription(GetParameterDescription)
     case getParameterDescriptionResponse(GetParameterDescriptionResponse)
+    case getDeviceInfo
+    case getDeviceInfoResponse(GetDeviceInfoResponse)
 }
 
 // MARK: - Properties
@@ -65,6 +67,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .getParameterDescriptionResponse(value):
             return type(of: value).commandClass
+        case .getDeviceInfo:
+            return .get
+        case let .getDeviceInfoResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -100,7 +106,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case let .getParameterDescriptionResponse(value):
             return type(of: value).parameterID
-        
+        case .getDeviceInfo:
+            return .deviceInfo
+        case let .getDeviceInfoResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -143,9 +152,9 @@ public extension MessageDataBlock {
                 else { return nil }
             self = .getStatusIDDescription(value)
         case (GetStatusIDDescriptionResponse.commandClass, GetStatusIDDescriptionResponse.parameterID):
-        guard let value = GetStatusIDDescriptionResponse(data: parameterData)
-            else { return nil }
-        self = .getStatusIDDescriptionResponse(value)
+            guard let value = GetStatusIDDescriptionResponse(data: parameterData)
+                else { return nil }
+            self = .getStatusIDDescriptionResponse(value)
         case (.set, .clearStatusId):
             self = .clearStatusID
         case (.setResponse, .clearStatusId):
@@ -169,13 +178,19 @@ public extension MessageDataBlock {
                 else { return nil }
             self = .getSupportedParametersResponse(value)
         case (GetParameterDescription.commandClass, GetParameterDescription.parameterID):
-        guard let value = GetParameterDescription(data: parameterData)
-            else { return nil }
-        self = .getParameterDescription(value)
+            guard let value = GetParameterDescription(data: parameterData)
+                else { return nil }
+            self = .getParameterDescription(value)
         case (GetParameterDescriptionResponse.commandClass, GetParameterDescriptionResponse.parameterID):
-        guard let value = GetParameterDescriptionResponse(data: parameterData)
-            else { return nil }
-        self = .getParameterDescriptionResponse(value)
+            guard let value = GetParameterDescriptionResponse(data: parameterData)
+                else { return nil }
+            self = .getParameterDescriptionResponse(value)
+        case (.get, .deviceInfo):
+            self = .getDeviceInfo
+        case (GetDeviceInfoResponse.commandClass, GetDeviceInfoResponse.parameterID):
+            guard let value = GetDeviceInfoResponse(data: parameterData)
+                else { return nil }
+            self = .getDeviceInfoResponse(value)
         default:
             return nil
         }
@@ -226,6 +241,9 @@ internal extension MessageDataBlock {
         case let .getSupportedParametersResponse(value): return value.dataLength
         case let .getParameterDescription(value): return value.dataLength
         case let .getParameterDescriptionResponse(value): return value.dataLength
+        case .getDeviceInfo:
+            return 0
+        case let .getDeviceInfoResponse(value): return value.dataLength
         }
     }
     
@@ -260,6 +278,10 @@ internal extension MessageDataBlock {
         case let .getParameterDescription(value):
             data += value
         case let .getParameterDescriptionResponse(value):
+            data += value
+        case .getDeviceInfo:
+            break
+        case let .getDeviceInfoResponse(value):
             data += value
         }
     }
