@@ -29,6 +29,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getParameterDescriptionResponse(GetParameterDescriptionResponse)
     case getDeviceInfo
     case getDeviceInfoResponse(GetDeviceInfoResponse)
+    case getProductDetailIDList
+    case getProductDetailIDListResponse(GetProductDetailIDListResponse)
 }
 
 // MARK: - Properties
@@ -71,6 +73,10 @@ public extension MessageDataBlock {
             return .get
         case let .getDeviceInfoResponse(value):
             return type(of: value).commandClass
+        case .getProductDetailIDList:
+            return .get
+        case let .getProductDetailIDListResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -109,6 +115,10 @@ public extension MessageDataBlock {
         case .getDeviceInfo:
             return .deviceInfo
         case let .getDeviceInfoResponse(value):
+            return type(of: value).parameterID
+        case .getProductDetailIDList:
+            return .productDetail
+        case let .getProductDetailIDListResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -191,6 +201,12 @@ public extension MessageDataBlock {
             guard let value = GetDeviceInfoResponse(data: parameterData)
                 else { return nil }
             self = .getDeviceInfoResponse(value)
+        case (.get, .productDetail):
+            self = .getProductDetailIDList
+        case (GetProductDetailIDListResponse.commandClass, GetProductDetailIDListResponse.parameterID):
+            guard let value = GetProductDetailIDListResponse(data: parameterData)
+                else { return nil }
+            self = .getProductDetailIDListResponse(value)
         default:
             return nil
         }
@@ -244,6 +260,9 @@ internal extension MessageDataBlock {
         case .getDeviceInfo:
             return 0
         case let .getDeviceInfoResponse(value): return value.dataLength
+        case .getProductDetailIDList:
+            return 0
+        case let .getProductDetailIDListResponse(value): return value.dataLength
         }
     }
     
@@ -282,6 +301,10 @@ internal extension MessageDataBlock {
         case .getDeviceInfo:
             break
         case let .getDeviceInfoResponse(value):
+            data += value
+        case .getProductDetailIDList:
+            break
+        case let .getProductDetailIDListResponse(value):
             data += value
         }
     }

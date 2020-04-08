@@ -5,6 +5,8 @@
 //  Created by Alsey Coleman Miller on 3/12/20.
 //
 
+import Foundation
+
 /// RDM Product Detail definitions
 ///
 /// - See Also: ANSI E1.20 – 2010, page 106
@@ -496,4 +498,34 @@ public extension ProductDetail {
         .controllableBreaker: "Controllable Breaker",
         .other: "Other"
     ]
+}
+
+// MARK: - Data
+
+public extension ProductDetail {
+    
+    internal static var length: Int { return MemoryLayout<ParameterID>.size }
+    
+    init?(data: Data) {
+        guard data.count == ProductDetail.length
+            else { return nil }
+        self.rawValue = UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))
+    }
+    
+    var data: Data {
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension ProductDetail: DataConvertible {
+    
+    var dataLength: Int {
+        return ParameterID.length
+    }
+    
+    static func += (data: inout Data, value: Self) {
+        data += value.rawValue.bigEndian
+    }
 }
