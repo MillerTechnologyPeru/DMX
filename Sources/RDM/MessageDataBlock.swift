@@ -35,6 +35,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDeviceModelDescriptionResponse(GetDeviceModelDescriptionResponse)
     case getManufacturerLabel
     case getManufacturerLabelResponse(GetManufacturerLabelResponse)
+    case getDeviceLabel
+    case getDeviceLabelResponse(GetDeviceLabelResponse)
+    case setDeviceLabel(SetDeviceLabel)
+    case setDeviceLabelResponse
 }
 
 // MARK: - Properties
@@ -89,6 +93,14 @@ public extension MessageDataBlock {
             return .get
         case let .getManufacturerLabelResponse(value):
             return type(of: value).commandClass
+        case .getDeviceLabel:
+            return .get
+        case let .getDeviceLabelResponse(value):
+            return type(of: value).commandClass
+        case let .setDeviceLabel(value):
+            return type(of: value).commandClass
+        case .setDeviceLabelResponse:
+            return .setResponse
         }
     }
     
@@ -140,6 +152,14 @@ public extension MessageDataBlock {
             return .manufacturerLabel
         case let .getManufacturerLabelResponse(value):
             return type(of: value).parameterID
+        case .getDeviceLabel:
+            return .deviceLabel
+        case let .getDeviceLabelResponse(value):
+            return type(of: value).parameterID
+        case let .setDeviceLabel(value):
+            return type(of: value).parameterID
+        case .setDeviceLabelResponse:
+            return .deviceLabel
         }
     }
 }
@@ -239,6 +259,18 @@ public extension MessageDataBlock {
             guard let value = GetManufacturerLabelResponse(data: parameterData)
                 else { return nil }
             self = .getManufacturerLabelResponse(value)
+        case (.get, .deviceLabel):
+            self = .getDeviceLabel
+        case (GetDeviceLabelResponse.commandClass, GetDeviceLabelResponse.parameterID):
+            guard let value = GetDeviceLabelResponse(data: parameterData)
+                else { return nil }
+            self = .getDeviceLabelResponse(value)
+        case (SetDeviceLabel.commandClass, SetDeviceLabel.parameterID):
+            guard let value = SetDeviceLabel(data: parameterData)
+                else { return nil }
+            self = .setDeviceLabel(value)
+        case (.setResponse, .deviceLabel):
+            self = .setDeviceLabelResponse
         default:
             return nil
         }
@@ -301,6 +333,12 @@ internal extension MessageDataBlock {
         case .getManufacturerLabel:
             return 0
         case let .getManufacturerLabelResponse(value): return value.dataLength
+        case .getDeviceLabel:
+            return 0
+        case let .getDeviceLabelResponse(value): return value.dataLength
+        case let .setDeviceLabel(value): return value.dataLength
+        case .setDeviceLabelResponse:
+            return 0
         }
     }
     
@@ -352,6 +390,14 @@ internal extension MessageDataBlock {
             break
         case let .getManufacturerLabelResponse(value):
             data += value
+        case .getDeviceLabel:
+            break
+        case let .getDeviceLabelResponse(value):
+            data += value
+        case let .setDeviceLabel(value):
+            data += value
+        case .setDeviceLabelResponse:
+            break
         }
     }
 }
