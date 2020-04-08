@@ -39,6 +39,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDeviceLabelResponse(GetDeviceLabelResponse)
     case setDeviceLabel(SetDeviceLabel)
     case setDeviceLabelResponse
+    case getFactoryDefaults
+    case getFactoryDefaultsResponse(GetFactoryDefaultsResponse)
+    case setFactoryDefaults
+    case setFactoryDefaultsResponse
 }
 
 // MARK: - Properties
@@ -101,6 +105,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDeviceLabelResponse:
             return .setResponse
+        case .getFactoryDefaults:
+            return .get
+        case let .getFactoryDefaultsResponse(value):
+            return type(of: value).commandClass
+        case .setFactoryDefaults:
+            return .set
+        case .setFactoryDefaultsResponse:
+            return .setResponse
         }
     }
     
@@ -160,6 +172,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDeviceLabelResponse:
             return .deviceLabel
+        case .getFactoryDefaults:
+            return .factoryDefaults
+        case let .getFactoryDefaultsResponse(value):
+            return type(of: value).parameterID
+        case .setFactoryDefaults:
+            return .factoryDefaults
+        case .setFactoryDefaultsResponse:
+            return .factoryDefaults
         }
     }
 }
@@ -271,6 +291,16 @@ public extension MessageDataBlock {
             self = .setDeviceLabel(value)
         case (.setResponse, .deviceLabel):
             self = .setDeviceLabelResponse
+        case (.get, .factoryDefaults):
+            self = .getFactoryDefaults
+        case (GetFactoryDefaultsResponse.commandClass, GetFactoryDefaultsResponse.parameterID):
+            guard let value = GetFactoryDefaultsResponse(data: parameterData)
+                else { return nil }
+            self = .getFactoryDefaultsResponse(value)
+        case (.set, .factoryDefaults):
+            self = .setFactoryDefaults
+        case (.setResponse, .factoryDefaults):
+            self = .setFactoryDefaultsResponse
         default:
             return nil
         }
@@ -339,6 +369,13 @@ internal extension MessageDataBlock {
         case let .setDeviceLabel(value): return value.dataLength
         case .setDeviceLabelResponse:
             return 0
+        case .getFactoryDefaults:
+            return 0
+        case let .getFactoryDefaultsResponse(value): return value.dataLength
+        case .setFactoryDefaults:
+            return 0
+        case .setFactoryDefaultsResponse:
+            return 0
         }
     }
     
@@ -397,6 +434,14 @@ internal extension MessageDataBlock {
         case let .setDeviceLabel(value):
             data += value
         case .setDeviceLabelResponse:
+            break
+        case .getFactoryDefaults:
+            break
+        case let .getFactoryDefaultsResponse(value):
+            data += value
+        case .setFactoryDefaults:
+            break
+        case .setFactoryDefaultsResponse:
             break
         }
     }
