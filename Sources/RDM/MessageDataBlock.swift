@@ -31,6 +31,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDeviceInfoResponse(GetDeviceInfoResponse)
     case getProductDetailIDList
     case getProductDetailIDListResponse(GetProductDetailIDListResponse)
+    case getDeviceModelDescription
+    case getDeviceModelDescriptionResponse(GetDeviceModelDescriptionResponse)
+    case getManufacturerLabel
+    case getManufacturerLabelResponse(GetManufacturerLabelResponse)
 }
 
 // MARK: - Properties
@@ -77,6 +81,14 @@ public extension MessageDataBlock {
             return .get
         case let .getProductDetailIDListResponse(value):
             return type(of: value).commandClass
+        case .getDeviceModelDescription:
+            return .get
+        case let .getDeviceModelDescriptionResponse(value):
+            return type(of: value).commandClass
+        case .getManufacturerLabel:
+            return .get
+        case let .getManufacturerLabelResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -119,6 +131,14 @@ public extension MessageDataBlock {
         case .getProductDetailIDList:
             return .productDetail
         case let .getProductDetailIDListResponse(value):
+            return type(of: value).parameterID
+        case .getDeviceModelDescription:
+            return .deviceModelDescription
+        case let .getDeviceModelDescriptionResponse(value):
+            return type(of: value).parameterID
+        case .getManufacturerLabel:
+            return .manufacturerLabel
+        case let .getManufacturerLabelResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -207,6 +227,18 @@ public extension MessageDataBlock {
             guard let value = GetProductDetailIDListResponse(data: parameterData)
                 else { return nil }
             self = .getProductDetailIDListResponse(value)
+        case (.get, .deviceModelDescription):
+            self = .getDeviceModelDescription
+        case (GetDeviceModelDescriptionResponse.commandClass, GetDeviceModelDescriptionResponse.parameterID):
+            guard let value = GetDeviceModelDescriptionResponse(data: parameterData)
+                else { return nil }
+            self = .getDeviceModelDescriptionResponse(value)
+        case (.get, .manufacturerLabel):
+            self = .getManufacturerLabel
+        case (GetManufacturerLabelResponse.commandClass, GetManufacturerLabelResponse.parameterID):
+            guard let value = GetManufacturerLabelResponse(data: parameterData)
+                else { return nil }
+            self = .getManufacturerLabelResponse(value)
         default:
             return nil
         }
@@ -263,6 +295,12 @@ internal extension MessageDataBlock {
         case .getProductDetailIDList:
             return 0
         case let .getProductDetailIDListResponse(value): return value.dataLength
+        case .getDeviceModelDescription:
+            return 0
+        case let .getDeviceModelDescriptionResponse(value): return value.dataLength
+        case .getManufacturerLabel:
+            return 0
+        case let .getManufacturerLabelResponse(value): return value.dataLength
         }
     }
     
@@ -305,6 +343,14 @@ internal extension MessageDataBlock {
         case .getProductDetailIDList:
             break
         case let .getProductDetailIDListResponse(value):
+            data += value
+        case .getDeviceModelDescription:
+            break
+        case let .getDeviceModelDescriptionResponse(value):
+            data += value
+        case .getManufacturerLabel:
+            break
+        case let .getManufacturerLabelResponse(value):
             data += value
         }
     }
