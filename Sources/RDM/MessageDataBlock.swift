@@ -43,6 +43,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getFactoryDefaultsResponse(GetFactoryDefaultsResponse)
     case setFactoryDefaults
     case setFactoryDefaultsResponse
+    case getLanguageCapabilities
+    case getLanguageCapabilitiesResponse(GetLanguageCapabilitiesResponse)
 }
 
 // MARK: - Properties
@@ -113,6 +115,10 @@ public extension MessageDataBlock {
             return .set
         case .setFactoryDefaultsResponse:
             return .setResponse
+        case .getLanguageCapabilities:
+            return .get
+        case let .getLanguageCapabilitiesResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -180,6 +186,10 @@ public extension MessageDataBlock {
             return .factoryDefaults
         case .setFactoryDefaultsResponse:
             return .factoryDefaults
+        case .getLanguageCapabilities:
+            return .languageCapabilities
+        case let .getLanguageCapabilitiesResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -301,6 +311,12 @@ public extension MessageDataBlock {
             self = .setFactoryDefaults
         case (.setResponse, .factoryDefaults):
             self = .setFactoryDefaultsResponse
+        case (.get, .languageCapabilities):
+            self = .getLanguageCapabilities
+        case (GetLanguageCapabilitiesResponse.commandClass, GetLanguageCapabilitiesResponse.parameterID):
+            guard let value = GetLanguageCapabilitiesResponse(data: parameterData)
+                else { return nil }
+            self = .getLanguageCapabilitiesResponse(value)
         default:
             return nil
         }
@@ -376,6 +392,9 @@ internal extension MessageDataBlock {
             return 0
         case .setFactoryDefaultsResponse:
             return 0
+        case .getLanguageCapabilities:
+            return 0
+        case let .getLanguageCapabilitiesResponse(value): return value.dataLength
         }
     }
     
@@ -443,6 +462,10 @@ internal extension MessageDataBlock {
             break
         case .setFactoryDefaultsResponse:
             break
+        case .getLanguageCapabilities:
+            break
+        case let .getLanguageCapabilitiesResponse(value):
+            data += value
         }
     }
 }
