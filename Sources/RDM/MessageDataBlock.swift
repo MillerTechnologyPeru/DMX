@@ -53,6 +53,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSoftwareVersionLabelResponse(GetSoftwareVersionLabelResponse)
     case getBootSoftwareVersionID
     case getBootSoftwareVersionIDResponse(GetBootSoftwareVersionIDResponse)
+    case getBootSoftwareVersionLabel
+    case getBootSoftwareVersionLabelResponse(GetBootSoftwareVersionLabelResponse)
 }
 
 // MARK: - Properties
@@ -143,6 +145,10 @@ public extension MessageDataBlock {
             return .get
         case let .getBootSoftwareVersionIDResponse(value):
             return type(of: value).commandClass
+        case .getBootSoftwareVersionLabel:
+            return .get
+        case let .getBootSoftwareVersionLabelResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -229,6 +235,10 @@ public extension MessageDataBlock {
         case .getBootSoftwareVersionID:
             return .bootSoftwareVersionId
         case let .getBootSoftwareVersionIDResponse(value):
+            return type(of: value).parameterID
+        case .getBootSoftwareVersionLabel:
+            return .bootSoftwareVersionLabel
+        case let .getBootSoftwareVersionLabelResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -381,6 +391,12 @@ public extension MessageDataBlock {
             guard let value = GetBootSoftwareVersionIDResponse(data: parameterData)
                 else { return nil }
             self = .getBootSoftwareVersionIDResponse(value)
+        case (.get, .bootSoftwareVersionLabel):
+            self = .getBootSoftwareVersionLabel
+        case (GetBootSoftwareVersionLabelResponse.commandClass, GetBootSoftwareVersionLabelResponse.parameterID):
+            guard let value = GetBootSoftwareVersionLabelResponse(data: parameterData)
+                else { return nil }
+            self = .getBootSoftwareVersionLabelResponse(value)
         default:
             return nil
         }
@@ -471,6 +487,9 @@ internal extension MessageDataBlock {
         case .getBootSoftwareVersionID:
             return 0
         case let .getBootSoftwareVersionIDResponse(value): return value.dataLength
+        case .getBootSoftwareVersionLabel:
+            return 0
+        case let .getBootSoftwareVersionLabelResponse(value): return value.dataLength
         }
     }
     
@@ -557,6 +576,10 @@ internal extension MessageDataBlock {
         case .getBootSoftwareVersionID:
             break
         case let .getBootSoftwareVersionIDResponse(value):
+            data += value
+        case .getBootSoftwareVersionLabel:
+            break
+        case let .getBootSoftwareVersionLabelResponse(value):
             data += value
         }
     }
