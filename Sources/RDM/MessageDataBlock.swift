@@ -45,6 +45,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setFactoryDefaultsResponse
     case getLanguageCapabilities
     case getLanguageCapabilitiesResponse(GetLanguageCapabilitiesResponse)
+    case getLanguage
+    case getLanguageResponse(GetLanguageResponse)
+    case setLanguage(SetLanguage)
+    case setLanguageResponse
 }
 
 // MARK: - Properties
@@ -119,6 +123,14 @@ public extension MessageDataBlock {
             return .get
         case let .getLanguageCapabilitiesResponse(value):
             return type(of: value).commandClass
+        case .getLanguage:
+            return .get
+        case let .getLanguageResponse(value):
+            return type(of: value).commandClass
+        case let .setLanguage(value):
+            return type(of: value).commandClass
+        case .setLanguageResponse:
+            return .setResponse
         }
     }
     
@@ -190,6 +202,14 @@ public extension MessageDataBlock {
             return .languageCapabilities
         case let .getLanguageCapabilitiesResponse(value):
             return type(of: value).parameterID
+        case .getLanguage:
+            return .language
+        case let .getLanguageResponse(value):
+            return type(of: value).parameterID
+        case let .setLanguage(value):
+            return type(of: value).parameterID
+        case .setLanguageResponse:
+            return .language
         }
     }
 }
@@ -317,6 +337,18 @@ public extension MessageDataBlock {
             guard let value = GetLanguageCapabilitiesResponse(data: parameterData)
                 else { return nil }
             self = .getLanguageCapabilitiesResponse(value)
+        case (.get, .language):
+            self = .getLanguage
+        case (GetLanguageResponse.commandClass, GetLanguageResponse.parameterID):
+            guard let value = GetLanguageResponse(data: parameterData)
+                else { return nil }
+            self = .getLanguageResponse(value)
+        case (SetLanguage.commandClass, SetLanguage.parameterID):
+            guard let value = SetLanguage(data: parameterData)
+                else { return nil }
+            self = .setLanguage(value)
+        case (.setResponse , .language):
+            self = .setLanguageResponse
         default:
             return nil
         }
@@ -395,6 +427,12 @@ internal extension MessageDataBlock {
         case .getLanguageCapabilities:
             return 0
         case let .getLanguageCapabilitiesResponse(value): return value.dataLength
+        case .getLanguage:
+            return 0
+        case let .getLanguageResponse(value): return value.dataLength
+        case let .setLanguage(value): return value.dataLength
+        case .setLanguageResponse:
+            return 0
         }
     }
     
@@ -466,6 +504,14 @@ internal extension MessageDataBlock {
             break
         case let .getLanguageCapabilitiesResponse(value):
             data += value
+        case .getLanguage:
+            break
+        case let .getLanguageResponse(value):
+            data += value
+        case let .setLanguage(value):
+            data += value
+        case .setLanguageResponse:
+            break
         }
     }
 }
