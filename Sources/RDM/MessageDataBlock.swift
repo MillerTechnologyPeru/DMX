@@ -49,6 +49,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getLanguageResponse(GetLanguageResponse)
     case setLanguage(SetLanguage)
     case setLanguageResponse
+    case getSoftwareVersionLabel
+    case getSoftwareVersionLabelResponse(GetSoftwareVersionLabelResponse)
 }
 
 // MARK: - Properties
@@ -131,6 +133,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setLanguageResponse:
             return .setResponse
+        case .getSoftwareVersionLabel:
+            return .get
+        case let .getSoftwareVersionLabelResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -210,6 +216,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setLanguageResponse:
             return .language
+        case .getSoftwareVersionLabel:
+            return .softwareVersionLabel
+        case let .getSoftwareVersionLabelResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -349,6 +359,12 @@ public extension MessageDataBlock {
             self = .setLanguage(value)
         case (.setResponse , .language):
             self = .setLanguageResponse
+        case (.get, .softwareVersionLabel):
+            self = .getSoftwareVersionLabel
+        case (GetSoftwareVersionLabelResponse.commandClass, GetSoftwareVersionLabelResponse.parameterID):
+            guard let value = GetSoftwareVersionLabelResponse(data: parameterData)
+                else { return nil }
+            self = .getSoftwareVersionLabelResponse(value)
         default:
             return nil
         }
@@ -433,6 +449,9 @@ internal extension MessageDataBlock {
         case let .setLanguage(value): return value.dataLength
         case .setLanguageResponse:
             return 0
+        case .getSoftwareVersionLabel:
+            return 0
+        case let .getSoftwareVersionLabelResponse(value): return value.dataLength
         }
     }
     
@@ -512,6 +531,10 @@ internal extension MessageDataBlock {
             data += value
         case .setLanguageResponse:
             break
+        case .getSoftwareVersionLabel:
+            break
+        case let .getSoftwareVersionLabelResponse(value):
+            data += value
         }
     }
 }
