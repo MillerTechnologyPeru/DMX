@@ -55,6 +55,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getBootSoftwareVersionIDResponse(GetBootSoftwareVersionIDResponse)
     case getBootSoftwareVersionLabel
     case getBootSoftwareVersionLabelResponse(GetBootSoftwareVersionLabelResponse)
+    case getDMX512Personality
+    case getDMX512PersonalityResponse(GetDMX512PersonalityResponse)
+    case setDMX512Personality(SetDMX512Personality)
+    case setDMX512PersonalityResponse
 }
 
 // MARK: - Properties
@@ -149,6 +153,14 @@ public extension MessageDataBlock {
             return .get
         case let .getBootSoftwareVersionLabelResponse(value):
             return type(of: value).commandClass
+        case .getDMX512Personality:
+            return .get
+        case let .getDMX512PersonalityResponse(value):
+            return type(of: value).commandClass
+        case let .setDMX512Personality(value):
+            return type(of: value).commandClass
+        case .setDMX512PersonalityResponse:
+            return .setResponse
         }
     }
     
@@ -240,6 +252,14 @@ public extension MessageDataBlock {
             return .bootSoftwareVersionLabel
         case let .getBootSoftwareVersionLabelResponse(value):
             return type(of: value).parameterID
+        case .getDMX512Personality:
+            return .dmxPersonality
+        case let .getDMX512PersonalityResponse(value):
+            return type(of: value).parameterID
+        case let .setDMX512Personality(value):
+            return type(of: value).parameterID
+        case .setDMX512PersonalityResponse:
+            return .dmxPersonality
         }
     }
 }
@@ -397,6 +417,18 @@ public extension MessageDataBlock {
             guard let value = GetBootSoftwareVersionLabelResponse(data: parameterData)
                 else { return nil }
             self = .getBootSoftwareVersionLabelResponse(value)
+        case (.get, .dmxPersonality):
+            self = .getDMX512Personality
+        case (GetDMX512PersonalityResponse.commandClass, GetDMX512PersonalityResponse.parameterID):
+            guard let value = GetDMX512PersonalityResponse(data: parameterData)
+                else { return nil }
+            self = .getDMX512PersonalityResponse(value)
+        case (SetDMX512Personality.commandClass, SetDMX512Personality.parameterID):
+            guard let value = SetDMX512Personality(data: parameterData)
+                else { return nil }
+            self = .setDMX512Personality(value)
+        case (.setResponse, .dmxPersonality):
+            self = .setDMX512PersonalityResponse
         default:
             return nil
         }
@@ -490,6 +522,12 @@ internal extension MessageDataBlock {
         case .getBootSoftwareVersionLabel:
             return 0
         case let .getBootSoftwareVersionLabelResponse(value): return value.dataLength
+        case .getDMX512Personality:
+            return 0
+        case let .getDMX512PersonalityResponse(value): return value.dataLength
+        case let .setDMX512Personality(value): return value.dataLength
+        case .setDMX512PersonalityResponse:
+            return 0
         }
     }
     
@@ -581,6 +619,14 @@ internal extension MessageDataBlock {
             break
         case let .getBootSoftwareVersionLabelResponse(value):
             data += value
+        case .getDMX512Personality:
+            break
+        case let .getDMX512PersonalityResponse(value):
+            data += value
+        case let .setDMX512Personality(value):
+            data += value
+        case .setDMX512PersonalityResponse:
+            break
         }
     }
 }

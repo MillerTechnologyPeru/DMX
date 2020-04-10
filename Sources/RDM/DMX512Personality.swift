@@ -24,8 +24,8 @@ public struct DMX512Personality: Equatable, Hashable {
     
     // MARK: - Initialization
     
-    /// Initialize with major and minor versions
     init(current: UInt8, total: UInt8) {
+        assert(current != 0)
         self.current = current
         self.total = total
     }
