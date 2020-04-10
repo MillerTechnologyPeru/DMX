@@ -61,6 +61,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setDMX512PersonalityResponse
     case getDMX512PersonalityDescription(GetDMX512PersonalityDescription)
     case getDMX512PersonalityDescriptionResponse(GetDMX512PersonalityDescriptionResponse)
+    case getDMX512StartingAddress
+    case getDMX512StartingAddressResponse(GetDMX512StartingAddressResponse)
+    case setDMX512StartingAddress(SetDMX512StartingAddress)
+    case setDMX512StartingAddressResponse
 }
 
 // MARK: - Properties
@@ -167,6 +171,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .getDMX512PersonalityDescriptionResponse(value):
             return type(of: value).commandClass
+        case .getDMX512StartingAddress:
+            return .get
+        case let .getDMX512StartingAddressResponse(value):
+            return type(of: value).commandClass
+        case let .setDMX512StartingAddress(value):
+            return type(of: value).commandClass
+        case .setDMX512StartingAddressResponse:
+            return .setResponse
         }
     }
     
@@ -270,6 +282,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case let .getDMX512PersonalityDescriptionResponse(value):
             return type(of: value).parameterID
+        case .getDMX512StartingAddress:
+            return .dmxStartAddress
+        case let .getDMX512StartingAddressResponse(value):
+            return type(of: value).parameterID
+        case let .setDMX512StartingAddress(value):
+            return type(of: value).parameterID
+        case .setDMX512StartingAddressResponse:
+            return .dmxStartAddress
         }
     }
 }
@@ -447,6 +467,18 @@ public extension MessageDataBlock {
             guard let value = GetDMX512PersonalityDescriptionResponse(data: parameterData)
                 else { return nil }
             self = .getDMX512PersonalityDescriptionResponse(value)
+        case (.get, .dmxStartAddress):
+            self = .getDMX512StartingAddress
+        case (GetDMX512StartingAddressResponse.commandClass, GetDMX512StartingAddressResponse.parameterID):
+            guard let value = GetDMX512StartingAddressResponse(data: parameterData)
+                else { return nil }
+            self = .getDMX512StartingAddressResponse(value)
+        case (SetDMX512StartingAddress.commandClass, SetDMX512StartingAddress.parameterID):
+            guard let value = SetDMX512StartingAddress(data: parameterData)
+                else { return nil }
+            self = .setDMX512StartingAddress(value)
+        case (.setResponse, .dmxStartAddress):
+            self = .setDMX512StartingAddressResponse
         default:
             return nil
         }
@@ -548,6 +580,12 @@ internal extension MessageDataBlock {
             return 0
         case let .getDMX512PersonalityDescription(value): return value.dataLength
         case let .getDMX512PersonalityDescriptionResponse(value): return value.dataLength
+        case .getDMX512StartingAddress:
+            return 0
+        case let .getDMX512StartingAddressResponse(value): return value.dataLength
+        case let .setDMX512StartingAddress(value): return value.dataLength
+        case .setDMX512StartingAddressResponse:
+            return 0
         }
     }
     
@@ -651,6 +689,14 @@ internal extension MessageDataBlock {
             data += value
         case let .getDMX512PersonalityDescriptionResponse(value):
             data += value
+        case .getDMX512StartingAddress:
+            break
+        case let .getDMX512StartingAddressResponse(value):
+            data += value
+        case let .setDMX512StartingAddress(value):
+            data += value
+        case .setDMX512StartingAddressResponse:
+            break
         }
     }
 }
