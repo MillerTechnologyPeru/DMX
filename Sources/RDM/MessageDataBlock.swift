@@ -65,6 +65,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDMX512StartingAddressResponse(GetDMX512StartingAddressResponse)
     case setDMX512StartingAddress(SetDMX512StartingAddress)
     case setDMX512StartingAddressResponse
+    case getSlotInfo
+    case getSlotInfoResponse(GetSlotInfoResponse)
 }
 
 // MARK: - Properties
@@ -179,6 +181,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDMX512StartingAddressResponse:
             return .setResponse
+        case .getSlotInfo:
+            return .get
+        case let .getSlotInfoResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -290,6 +296,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDMX512StartingAddressResponse:
             return .dmxStartAddress
+        case .getSlotInfo:
+            return .slotInfo
+        case let .getSlotInfoResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -479,6 +489,12 @@ public extension MessageDataBlock {
             self = .setDMX512StartingAddress(value)
         case (.setResponse, .dmxStartAddress):
             self = .setDMX512StartingAddressResponse
+        case (.get, .slotInfo):
+            self = .getSlotInfo
+        case (GetSlotInfoResponse.commandClass, GetSlotInfoResponse.parameterID):
+            guard let value = GetSlotInfoResponse(data: parameterData)
+                else { return nil }
+            self = .getSlotInfoResponse(value)
         default:
             return nil
         }
@@ -586,6 +602,9 @@ internal extension MessageDataBlock {
         case let .setDMX512StartingAddress(value): return value.dataLength
         case .setDMX512StartingAddressResponse:
             return 0
+        case .getSlotInfo:
+            return 0
+        case let .getSlotInfoResponse(value): return value.dataLength
         }
     }
     
@@ -697,6 +716,10 @@ internal extension MessageDataBlock {
             data += value
         case .setDMX512StartingAddressResponse:
             break
+        case .getSlotInfo:
+            break
+        case let .getSlotInfoResponse(value):
+            data += value
         }
     }
 }
