@@ -135,6 +135,7 @@ extension DeviceInfo: DataConvertible {
         data += value.protocolVersion.rawValue.bigEndian
         data += value.deviceModelID.bigEndian
         data += value.productCategory.rawValue.bigEndian
+        data += value.softwareVersionID.bigEndian
         data += value.dmx512Footprint.rawValue.bigEndian
         data += value.dmx512Personality.rawValue.bigEndian
         data += value.dmx512StartAddress.bigEndian
