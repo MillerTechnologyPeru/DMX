@@ -52,6 +52,8 @@ final class RDMMessageTest: XCTestCase {
         ("testSetLanguageResponse", testSetLanguageResponse),
         ("testGetSoftwareVersionLabel", testGetSoftwareVersionLabel),
         ("testGetSoftwareVersionLabelResponse", testGetSoftwareVersionLabelResponse),
+        ("testGetBootSoftwareVersionID", testGetBootSoftwareVersionID),
+        ("testGetBootSoftwareVersionIDResponse", testGetBootSoftwareVersionIDResponse),
     ]
     
     func testDataCheckSum() {
@@ -1276,6 +1278,66 @@ final class RDMMessageTest: XCTestCase {
             messageCount: .zero,
             subDevice: .root,
             messageData: .getSoftwareVersionLabelResponse(.init(versionLabel: "ASCII text Software Version Label Up to 32 characters."))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetBootSoftwareVersionID() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0xC1, 0x00, 0x06, 0xF5])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getBootSoftwareVersionID
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetBootSoftwareVersionIDResponse() {
+
+        let data = Data([0xCC, 0x01, 0x1C, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0xC1, 0x04, 0x00, 0x00, 0x07, 0xE4, 0x07, 0xE8])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getBootSoftwareVersionIDResponse(.init(versionID: 2020))
         )
         
         dump(packet)
