@@ -28,6 +28,7 @@ public struct GetProductDetailIDListResponse: MessageDataBlockProtocol, Equatabl
     
     public static var parameterID: ParameterID { return .productDetail }
     
+    /// Packed list of 16-bit Product Detail ID’s limited to `six entries maximum`
     public let productDetailIDs: [ProductDetail]
     
     // MARK: - Initialization
@@ -42,8 +43,14 @@ public struct GetProductDetailIDListResponse: MessageDataBlockProtocol, Equatabl
 
 public extension GetProductDetailIDListResponse {
     
+    internal static var maxLength: Int { return 12 } // 0C
+    
+    internal static var minLength: Int { return 2 }
+    
     init?(data: Data) {
-        guard data.count % ProductDetail.length == 0
+        guard data.count >= type(of: self).minLength,
+              data.count <= type(of: self).maxLength,
+              data.count % ProductDetail.length == 0
             else { return nil }
         let count = data.count / ProductDetail.length
         let productDetailIDs = (0 ..< count)

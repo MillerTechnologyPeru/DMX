@@ -29,7 +29,9 @@ final class RDMMessageTest: XCTestCase {
         ("testGetParameterDescription", testGetParameterDescription),
         ("testGetParameterDescriptionResponse", testGetParameterDescriptionResponse),
         ("testGetDeviceInfo", testGetDeviceInfo),
-        ("testGetDeviceInfoResponse", testGetDeviceInfoResponse)
+        ("testGetDeviceInfoResponse", testGetDeviceInfoResponse),
+        ("testGetProductDetailIDList", testGetProductDetailIDList),
+        ("testGetProductDetailIDListResponse", testGetProductDetailIDListResponse)
     ]
     
     func testDataCheckSum() {
@@ -585,6 +587,68 @@ final class RDMMessageTest: XCTestCase {
             messageCount: .zero,
             subDevice: .root,
             messageData: .getDeviceInfoResponse(.init(deviceInfo: deviceInfo))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetProductDetailIDList() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x70, 0x00, 0x06, 0xA4])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getProductDetailIDList
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetProductDetailIDListResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x22, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x03, 0x00, 0x00, 0x00, 0x21, 0x00, 0x70, 0x0A, 0x00, 0x01, 0x0A, 0x01, 0x02, 0x00, 0x03, 0x03, 0x04, 0x03, 0x06, 0xD6])
+        
+        let productDetailIDs: [ProductDetail] = [.arc, .battery, .video , .co2, .pwm]
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgementOverflow,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getProductDetailIDListResponse(.init(productDetailIDs: productDetailIDs))
         )
         
         dump(packet)
