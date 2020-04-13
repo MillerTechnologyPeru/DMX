@@ -56,7 +56,7 @@ public extension GetLanguageCapabilitiesResponse {
 extension GetLanguageCapabilitiesResponse: DataConvertible {
     
     var dataLength: Int {
-        return MemoryLayout<UInt16>.size
+        return MemoryLayout<UInt16>.size * languageCodes.count
     }
     
     static func += (data: inout Data, value: GetLanguageCapabilitiesResponse) {
