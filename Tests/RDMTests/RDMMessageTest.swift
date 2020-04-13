@@ -56,6 +56,10 @@ final class RDMMessageTest: XCTestCase {
         ("testGetBootSoftwareVersionIDResponse", testGetBootSoftwareVersionIDResponse),
         ("testGetBootSoftwareVersionLabel", testGetBootSoftwareVersionLabel),
         ("testGetBootSoftwareVersionLabelResponse", testGetBootSoftwareVersionLabelResponse),
+        ("testGetDMX512Personality", testGetDMX512Personality),
+        ("testGetDMX512PersonalityResponse", testGetDMX512PersonalityResponse),
+        ("testSetDMX512Personality", testSetDMX512Personality),
+        ("testSetDMX512PersonalityResponse", testSetDMX512PersonalityResponse),
     ]
     
     func testDataCheckSum() {
@@ -1410,6 +1414,130 @@ final class RDMMessageTest: XCTestCase {
         guard let messageData = MessageDataBlock(data: packet.messageData.data)
             else { XCTFail("Could not parse Message Data Block"); return }
         dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetDMX512Personality() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0xE0, 0x00, 0x07, 0x14])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getDMX512Personality
+        )
+        
+        dump(packet)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetDMX512PersonalityResponse() {
+
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0xE0, 0x02, 0x01, 0x01, 0x07, 0x1A])
+        
+        
+        
+        let dmxPersonality = DMX512Personality.init(current: 1, total: 1)
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getDMX512PersonalityResponse(.init(dmxPersonality: dmxPersonality))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetDMX512Personality() {
+
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x00, 0xE0, 0x01, 0x01, 0x07, 0x27])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .setDMX512Personality(.init(personality: 1))
+        )
+        
+        dump(packet)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetDMX512PersonalityResponse() {
+
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0xE0, 0x00, 0x07, 0x24])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .setDMX512PersonalityResponse
+        )
+        
+        dump(packet)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
         
         guard let decodedPacket = RDM.Packet(data: data)
             else { XCTFail("Could not parse packet"); return }
