@@ -100,7 +100,7 @@ public struct Packet: Equatable, Hashable {
     public init(destination: DeviceUID,
                 source: DeviceUID,
                 transaction: TransactionNumber,
-                typeField: UInt8,
+                portID typeField: UInt8,
                 messageCount: UInt8,
                 subDevice: SubDevice,
                 messageData: MessageDataBlock) {
@@ -117,6 +117,24 @@ public struct Packet: Equatable, Hashable {
         
         // calculate checksum
         self.checksum = Checksum(data: dataWithoutChecksum)
+    }
+    
+    /// Initialize RDM Packet with Response Type
+    public init(destination: DeviceUID,
+                source: DeviceUID,
+                transaction: TransactionNumber,
+                responseType typeField: ResponseType,
+                messageCount: UInt8,
+                subDevice: SubDevice,
+                messageData: MessageDataBlock) {
+        
+        self.init(destination: destination,
+                  source: source,
+                  transaction: transaction,
+                  portID: typeField.rawValue,
+                  messageCount: messageCount,
+                  subDevice: subDevice,
+                  messageData: messageData)
     }
 }
 

@@ -45,7 +45,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 0x01,
+            portID: 0x01,
             messageCount: 0x00,
             subDevice: .root,
             messageData: .getQueueMessage(.init(status: .error))
@@ -73,7 +73,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 0x01,
+            portID: 0x01,
             messageCount: 0x00,
             subDevice: .root,
             messageData: .getStatusMessages(.init(status: .error))
@@ -124,7 +124,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 0x01,
+            responseType: .acknowledgementTimer,
             messageCount: 8,
             subDevice: .root,
             messageData: .getStatusMessagesResponse(.init(statusMessage: statusMessages))
@@ -151,7 +151,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .getStatusIDDescription(.init(statusID: StatusMessageID.ready))
@@ -189,7 +189,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgement.rawValue,
+            responseType: ResponseType.acknowledgement,
             messageCount: 0,
             subDevice: .root,
             messageData: .getStatusIDDescriptionResponse(.init(response: statusMessage.description))
@@ -217,7 +217,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .clearStatusID
@@ -246,7 +246,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgement.rawValue,
+            responseType: .acknowledgement,
             messageCount: 0,
             subDevice: .root,
             messageData: .clearStatusIDResponse
@@ -280,7 +280,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .getSubDeviceStatusReportingThreshold
@@ -309,7 +309,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgement.rawValue,
+            responseType: .acknowledgement,
             messageCount: 0,
             subDevice: .root,
             messageData: .getSubDeviceStatusReportingThresholdResponse(.init(status: .none))
@@ -338,7 +338,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .setSubDeviceStatusReportingThreshold(.init(status: .getLastMessage))
@@ -367,7 +367,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgement.rawValue,
+            responseType: .acknowledgement,
             messageCount: 0,
             subDevice: .root,
             messageData: .setSubDeviceStatusReportingThresholdResponse
@@ -396,7 +396,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .getSupportedParameters
@@ -429,7 +429,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgementOverflow.rawValue,
+            responseType: .acknowledgementOverflow,
             messageCount: 0,
             subDevice: .root,
             messageData: .getSupportedParametersResponse(.init(parameterIDs: [.powerState, .capturePreset, .deviceInfo]))
@@ -462,7 +462,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: 1,
+            portID: 1,
             messageCount: 0,
             subDevice: .root,
             messageData: .getParameterDescription(.init(parameterID: ParameterID(rawValue: 0x8000)))
@@ -503,7 +503,7 @@ final class RDMMessageTest: XCTestCase {
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
             transaction: 0,
-            typeField: ResponseType.acknowledgement.rawValue,
+            responseType: .acknowledgement,
             messageCount: 0,
             subDevice: .root,
             messageData: .getParameterDescriptionResponse(.init(parameterDescription: parameterDescription))
