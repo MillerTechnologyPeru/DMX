@@ -46,6 +46,10 @@ final class RDMMessageTest: XCTestCase {
         ("testSetFactoryDefaultsResponse", testSetFactoryDefaultsResponse),
         ("testGetLanguageCapabilities", testGetLanguageCapabilities),
         ("testGetLanguageCapabilitiesResponse", testGetLanguageCapabilitiesResponse),
+        ("testGetLanguage", testGetLanguage),
+        ("testGetLanguageResponse", testGetLanguageResponse),
+        ("testSetLanguage", testSetLanguage),
+        ("testSetLanguageResponse", testSetLanguageResponse),
     ]
     
     func testDataCheckSum() {
@@ -1100,6 +1104,126 @@ final class RDMMessageTest: XCTestCase {
         guard let messageData = MessageDataBlock(data: packet.messageData.data)
             else { XCTFail("Could not parse Message Data Block"); return }
         dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetLanguage() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0xB0, 0x00, 0x06, 0xE4])
+
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getLanguage
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetLanguageResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0xB0, 0x02, 0x45, 0x4E, 0x07, 0x7B])
+
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getLanguageResponse(.init(languageCode: .en))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetLanguage() {
+
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x00, 0xB0, 0x02, 0x00, 0x00, 0x06, 0xF8])
+
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .setLanguage(.init(languageCode: .reset))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetLanguageResponse() {
+ 
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0xB0, 0x00, 0x06, 0xF4])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .setLanguageResponse
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
         
         guard let decodedPacket = RDM.Packet(data: data)
             else { XCTFail("Could not parse packet"); return }
