@@ -72,6 +72,7 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDefaultSlotValue
     case getDefaultSlotValueResponse(GetDefaultSlotValueResponse)
     case getSensorDefinition(GetSensorDefinition)
+    case getSensorDefinitionResponse(GetSensorDefinitionResponse)
 }
 
 // MARK: - Properties
@@ -200,6 +201,8 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .getSensorDefinition(value):
             return type(of: value).commandClass
+        case let .getSensorDefinitionResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -324,6 +327,8 @@ public extension MessageDataBlock {
         case let .getDefaultSlotValueResponse(value):
             return type(of: value).parameterID
         case let .getSensorDefinition(value):
+            return type(of: value).parameterID
+        case let .getSensorDefinitionResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -538,6 +543,10 @@ public extension MessageDataBlock {
             guard let value = GetSensorDefinition(data: parameterData)
                 else { return nil }
             self = .getSensorDefinition(value)
+        case (GetSensorDefinitionResponse.commandClass, GetSensorDefinitionResponse.parameterID):
+            guard let value = GetSensorDefinitionResponse(data: parameterData)
+                else { return nil }
+            self = .getSensorDefinitionResponse(value)
         default:
             return nil
         }
@@ -654,6 +663,7 @@ internal extension MessageDataBlock {
             return 0
         case let .getDefaultSlotValueResponse(value): return value.dataLength
         case let .getSensorDefinition(value): return value.dataLength
+        case let .getSensorDefinitionResponse(value): return value.dataLength
         }
     }
     
@@ -779,6 +789,8 @@ internal extension MessageDataBlock {
             data += value
         case let .getSensorDefinition(value):
             data += value
+        case let .getSensorDefinitionResponse(value):
+        data += value
         }
     }
 }
