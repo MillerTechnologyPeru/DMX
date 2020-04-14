@@ -71,6 +71,7 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSlotDescriptionResponse(GetSlotDescriptionResponse)
     case getDefaultSlotValue
     case getDefaultSlotValueResponse(GetDefaultSlotValueResponse)
+    case getSensorDefinition(GetSensorDefinition)
 }
 
 // MARK: - Properties
@@ -197,6 +198,8 @@ public extension MessageDataBlock {
             return .get
         case let .getDefaultSlotValueResponse(value):
             return type(of: value).commandClass
+        case let .getSensorDefinition(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -319,6 +322,8 @@ public extension MessageDataBlock {
         case .getDefaultSlotValue:
             return .defaultSlotValue
         case let .getDefaultSlotValueResponse(value):
+            return type(of: value).parameterID
+        case let .getSensorDefinition(value):
             return type(of: value).parameterID
         }
     }
@@ -529,6 +534,10 @@ public extension MessageDataBlock {
             guard let value = GetDefaultSlotValueResponse(data: parameterData)
                 else { return nil }
             self = .getDefaultSlotValueResponse(value)
+        case (GetSensorDefinition.commandClass, GetSensorDefinition.parameterID):
+            guard let value = GetSensorDefinition(data: parameterData)
+                else { return nil }
+            self = .getSensorDefinition(value)
         default:
             return nil
         }
@@ -644,6 +653,7 @@ internal extension MessageDataBlock {
         case .getDefaultSlotValue:
             return 0
         case let .getDefaultSlotValueResponse(value): return value.dataLength
+        case let .getSensorDefinition(value): return value.dataLength
         }
     }
     
@@ -766,6 +776,8 @@ internal extension MessageDataBlock {
         case .getDefaultSlotValue:
             break
         case let .getDefaultSlotValueResponse(value):
+            data += value
+        case let .getSensorDefinition(value):
             data += value
         }
     }
