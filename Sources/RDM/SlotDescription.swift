@@ -28,7 +28,7 @@ public struct SlotDescription: Equatable, Hashable {
                 description: String) {
     
         self.slotResquested = slotResquested
-        self.description = description
+        self.description = description.count > type(of: self).descriptionMaxLength ? String(description.prefix(type(of: self).descriptionMaxLength)) : description
     }
 }
 
