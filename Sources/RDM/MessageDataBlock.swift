@@ -67,6 +67,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setDMX512StartingAddressResponse
     case getSlotInfo
     case getSlotInfoResponse(GetSlotInfoResponse)
+    case getSlotDescription(GetSlotDescription)
+    case getSlotDescriptionResponse(GetSlotDescriptionResponse)
 }
 
 // MARK: - Properties
@@ -185,6 +187,10 @@ public extension MessageDataBlock {
             return .get
         case let .getSlotInfoResponse(value):
             return type(of: value).commandClass
+        case let .getSlotDescription(value):
+            return type(of: value).commandClass
+        case let .getSlotDescriptionResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -299,6 +305,10 @@ public extension MessageDataBlock {
         case .getSlotInfo:
             return .slotInfo
         case let .getSlotInfoResponse(value):
+            return type(of: value).parameterID
+        case let .getSlotDescription(value):
+            return type(of: value).parameterID
+        case let .getSlotDescriptionResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -495,6 +505,14 @@ public extension MessageDataBlock {
             guard let value = GetSlotInfoResponse(data: parameterData)
                 else { return nil }
             self = .getSlotInfoResponse(value)
+        case (GetSlotDescription.commandClass, GetSlotDescription.parameterID):
+            guard let value =  GetSlotDescription(data: parameterData)
+                else { return nil }
+            self = .getSlotDescription(value)
+        case (GetSlotDescriptionResponse.commandClass, GetSlotDescriptionResponse.parameterID):
+            guard let value = GetSlotDescriptionResponse(data: parameterData)
+                else { return nil }
+            self = .getSlotDescriptionResponse(value)
         default:
             return nil
         }
@@ -605,6 +623,8 @@ internal extension MessageDataBlock {
         case .getSlotInfo:
             return 0
         case let .getSlotInfoResponse(value): return value.dataLength
+        case let .getSlotDescription(value): return value.dataLength
+        case let .getSlotDescriptionResponse(value): return value.dataLength
         }
     }
     
@@ -719,6 +739,10 @@ internal extension MessageDataBlock {
         case .getSlotInfo:
             break
         case let .getSlotInfoResponse(value):
+            data += value
+        case let .getSlotDescription(value):
+            data += value
+        case let .getSlotDescriptionResponse(value):
             data += value
         }
     }

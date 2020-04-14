@@ -16,6 +16,8 @@
   Manufacturer-specific IDs are in the range of `0x8000 – 0xFFDF`.
   
  The Slot IDs are organized into categories to provide logical groupings, which controllers can use to provide a more intuitive user interface for Manufacturer-specific codes.
+ 
+ - SeeAlso: ANSI E1.20 – 2010, page 119, Table C-2: Slot ID Definitions
  */
 public struct SlotID: RawRepresentable, Equatable, Hashable {
     
