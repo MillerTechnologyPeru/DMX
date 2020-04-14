@@ -48,7 +48,7 @@ public extension SlotOffset {
         guard data.count == type(of: self).length
             else { return nil }
         self.field1 = UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))
-        self.field2 = data[3]
+        self.field2 = data[2]
     }
     
     var data: Data {
