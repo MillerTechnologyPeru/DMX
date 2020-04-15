@@ -14,7 +14,7 @@ public struct SetLampStrikes: MessageDataBlockProtocol, Equatable, Hashable {
     
     // MARK: - Properties
     
-    public static var commandClass: CommandClass { return .getResponse }
+    public static var commandClass: CommandClass { return .set }
     
     public static var parameterID: ParameterID { return .lampStrikes }
     
