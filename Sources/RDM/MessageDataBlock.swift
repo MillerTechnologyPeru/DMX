@@ -91,6 +91,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getLampStrikesResponse(GetLampStrikesResponse)
     case setLampStrikes(SetLampStrikes)
     case setLampStrikesResponse
+    case getLampState
+    case getLampStateResponse(GetLampStateResponse)
+    case setLampState(SetLampState)
+    case setLampStateResponse
 }
 
 // MARK: - Properties
@@ -257,6 +261,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setLampStrikesResponse:
             return .setResponse
+        case .getLampState:
+            return .get
+        case let .getLampStateResponse(value):
+            return type(of: value).commandClass
+        case let .setLampState(value):
+            return type(of: value).commandClass
+        case .setLampStateResponse:
+            return .setResponse
         }
     }
     
@@ -420,6 +432,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setLampStrikesResponse:
             return .lampStrikes
+        case .getLampState:
+            return .lampState
+        case let .getLampStateResponse(value):
+            return type(of: value).parameterID
+        case let .setLampState(value):
+            return type(of: value).parameterID
+        case .setLampStateResponse:
+            return .lampState
         }
     }
 }
@@ -695,6 +715,18 @@ public extension MessageDataBlock {
             self = .setLampStrikes(value)
         case (.setResponse, .lampStrikes):
             self = .setLampStrikesResponse
+        case (.get, .lampState):
+            self = .getLampState
+        case (GetLampStateResponse.commandClass, GetLampStateResponse.parameterID):
+            guard let value = GetLampStateResponse(data: parameterData)
+                else { return nil }
+            self = .getLampStateResponse(value)
+        case (SetLampState.commandClass, SetLampState.parameterID):
+            guard let value = SetLampState(data: parameterData)
+                else { return nil }
+            self = .setLampState(value)
+        case (.setResponse, .lampState):
+            self = .setLampStateResponse
         default:
             return nil
         }
@@ -836,6 +868,12 @@ internal extension MessageDataBlock {
         case let .getLampStrikesResponse(value): return value.dataLength
         case let .setLampStrikes(value): return value.dataLength
         case .setLampStrikesResponse:
+            return 0
+        case .getLampState:
+            return 0
+        case let .getLampStateResponse(value): return value.dataLength
+        case let .setLampState(value): return value.dataLength
+        case .setLampStateResponse:
             return 0
         }
     }
@@ -999,6 +1037,14 @@ internal extension MessageDataBlock {
         case let .setLampStrikes(value):
             data += value
         case .setLampStrikesResponse:
+            break
+        case .getLampState:
+            break
+        case let .getLampStateResponse(value):
+            data += value
+        case let .setLampState(value):
+            data += value
+        case .setLampStateResponse:
             break
         }
     }
