@@ -95,6 +95,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getLampStateResponse(GetLampStateResponse)
     case setLampState(SetLampState)
     case setLampStateResponse
+    case getLampOnMode
+    case getLampOnModeResponse(GetLampOnModeResponse)
+    case setLampOnMode(SetLampOnMode)
+    case setLampOnModeResponse
 }
 
 // MARK: - Properties
@@ -269,6 +273,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setLampStateResponse:
             return .setResponse
+        case .getLampOnMode:
+            return .get
+        case let .getLampOnModeResponse(value):
+            return type(of: value).commandClass
+        case let .setLampOnMode(value):
+            return type(of: value).commandClass
+        case .setLampOnModeResponse:
+            return .setResponse
         }
     }
     
@@ -440,6 +452,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setLampStateResponse:
             return .lampState
+        case .getLampOnMode:
+            return .lampOnMode
+        case let .getLampOnModeResponse(value):
+            return type(of: value).parameterID
+        case let .setLampOnMode(value):
+            return type(of: value).parameterID
+        case .setLampOnModeResponse:
+            return .lampOnMode
         }
     }
 }
@@ -727,6 +747,18 @@ public extension MessageDataBlock {
             self = .setLampState(value)
         case (.setResponse, .lampState):
             self = .setLampStateResponse
+        case (.get, .lampOnMode):
+            self = .getLampOnMode
+        case (GetLampOnModeResponse.commandClass, GetLampOnModeResponse.parameterID):
+            guard let value = GetLampOnModeResponse(data: parameterData)
+                else { return nil }
+            self = .getLampOnModeResponse(value)
+        case (SetLampOnMode.commandClass, SetLampOnMode.parameterID):
+            guard let value = SetLampOnMode(data: parameterData)
+                else { return nil }
+            self = .setLampOnMode(value)
+        case (.setResponse, .lampOnMode):
+            self = .setLampOnModeResponse
         default:
             return nil
         }
@@ -874,6 +906,12 @@ internal extension MessageDataBlock {
         case let .getLampStateResponse(value): return value.dataLength
         case let .setLampState(value): return value.dataLength
         case .setLampStateResponse:
+            return 0
+        case .getLampOnMode:
+            return 0
+        case let .getLampOnModeResponse(value): return value.dataLength
+        case let .setLampOnMode(value): return value.dataLength
+        case .setLampOnModeResponse:
             return 0
         }
     }
@@ -1045,6 +1083,14 @@ internal extension MessageDataBlock {
         case let .setLampState(value):
             data += value
         case .setLampStateResponse:
+            break
+        case .getLampOnMode:
+            break
+        case let .getLampOnModeResponse(value):
+            data += value
+        case let .setLampOnMode(value):
+            data += value
+        case .setLampOnModeResponse:
             break
         }
     }
