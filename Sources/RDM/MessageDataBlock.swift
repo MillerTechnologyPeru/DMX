@@ -103,6 +103,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDevicePowerCyclesResponse(GetDevicePowerCyclesResponse)
     case setDevicePowerCycles(SetDevicePowerCycles)
     case setDevicePowerCyclesResponse
+    case getDisplayInvert
+    case getDisplayInvertResponse(GetDisplayInvertResponse)
+    case setDisplayInvert(SetDisplayInvert)
+    case setDisplayInvertResponse
 }
 
 // MARK: - Properties
@@ -293,6 +297,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDevicePowerCyclesResponse:
             return .setResponse
+        case .getDisplayInvert:
+            return .get
+        case let .getDisplayInvertResponse(value):
+            return type(of: value).commandClass
+        case let .setDisplayInvert(value):
+            return type(of: value).commandClass
+        case .setDisplayInvertResponse:
+            return .setResponse
         }
     }
     
@@ -480,6 +492,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDevicePowerCyclesResponse:
             return .devicePowerCycles
+        case .getDisplayInvert:
+            return .displayInvert
+        case let .getDisplayInvertResponse(value):
+            return type(of: value).parameterID
+        case let .setDisplayInvert(value):
+            return type(of: value).parameterID
+        case .setDisplayInvertResponse:
+            return .displayInvert
         }
     }
 }
@@ -791,6 +811,18 @@ public extension MessageDataBlock {
             self = .setDevicePowerCycles(value)
         case (.setResponse, .devicePowerCycles):
             self = .setDevicePowerCyclesResponse
+        case (.get, .displayInvert):
+            self = .getDisplayInvert
+        case (GetDisplayInvertResponse.commandClass, GetDisplayInvertResponse.parameterID):
+            guard let value = GetDisplayInvertResponse(data: parameterData)
+                else { return nil }
+            self = .getDisplayInvertResponse(value)
+        case (SetDisplayInvert.commandClass, SetDisplayInvert.parameterID):
+            guard let value = SetDisplayInvert(data: parameterData)
+                else { return nil }
+            self = .setDisplayInvert(value)
+        case (.setResponse, .displayInvert):
+            self = .setDisplayInvertResponse
         default:
             return nil
         }
@@ -950,6 +982,12 @@ internal extension MessageDataBlock {
         case let .getDevicePowerCyclesResponse(value): return value.dataLength
         case let .setDevicePowerCycles(value): return value.dataLength
         case .setDevicePowerCyclesResponse:
+            return 0
+        case .getDisplayInvert:
+            return 0
+        case let .getDisplayInvertResponse(value): return value.dataLength
+        case let .setDisplayInvert(value): return value.dataLength
+        case .setDisplayInvertResponse:
             return 0
         }
     }
@@ -1137,6 +1175,14 @@ internal extension MessageDataBlock {
         case let .setDevicePowerCycles(value):
             data += value
         case .setDevicePowerCyclesResponse:
+            break
+        case .getDisplayInvert:
+            break
+        case let .getDisplayInvertResponse(value):
+            data += value
+        case let .setDisplayInvert(value):
+            data += value
+        case .setDisplayInvertResponse:
             break
         }
     }
