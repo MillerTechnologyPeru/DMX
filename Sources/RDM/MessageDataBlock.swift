@@ -77,6 +77,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSensorResponse(GetSensorResponse)
     case setSensor(SetSensor)
     case setSensorResponse(SetSensorResponse)
+    case recordSensors(RecordSensors)
+    case recordSensorsResponse
 }
 
 // MARK: - Properties
@@ -215,6 +217,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .setSensorResponse(value):
             return type(of: value).commandClass
+        case let .recordSensors(value):
+            return type(of: value).commandClass
+        case .recordSensorsResponse:
+            return .setResponse
         }
     }
     
@@ -350,6 +356,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case let .setSensorResponse(value):
             return type(of: value).parameterID
+        case let .recordSensors(value):
+            return type(of: value).parameterID
+        case .recordSensorsResponse:
+            return .recordSensors
         }
     }
 }
@@ -583,6 +593,12 @@ public extension MessageDataBlock {
             guard let value = SetSensorResponse(data: parameterData)
                 else { return nil }
             self = .setSensorResponse(value)
+        case (RecordSensors.commandClass, RecordSensors.parameterID):
+            guard let value = RecordSensors(data: parameterData)
+                else { return nil }
+            self = .recordSensors(value)
+        case (.setResponse, .recordSensors):
+            self = .recordSensorsResponse
         default:
             return nil
         }
@@ -704,6 +720,9 @@ internal extension MessageDataBlock {
         case let .getSensorResponse(value): return value.dataLength
         case let .setSensor(value): return value.dataLength
         case let .setSensorResponse(value): return value.dataLength
+        case let .recordSensors(value): return value.dataLength
+        case .recordSensorsResponse:
+            return 0
         }
     }
     
@@ -839,6 +858,10 @@ internal extension MessageDataBlock {
             data += value
         case let .setSensorResponse(value):
             data += value
+        case let .recordSensors(value):
+            data += value
+        case .recordSensorsResponse:
+            break
         }
     }
 }
