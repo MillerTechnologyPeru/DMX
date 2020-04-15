@@ -79,6 +79,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setSensorResponse(SetSensorResponse)
     case recordSensors(RecordSensors)
     case recordSensorsResponse
+    case getDeviceHours
+    case getDeviceHoursResponse(GetDeviceHoursResponse)
+    case setDeviceHours(SetDeviceHours)
+    case setDeviceHoursResponse
 }
 
 // MARK: - Properties
@@ -221,6 +225,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .recordSensorsResponse:
             return .setResponse
+        case .getDeviceHours:
+            return .get
+        case let .getDeviceHoursResponse(value):
+            return type(of: value).commandClass
+        case let .setDeviceHours(value):
+            return type(of: value).commandClass
+        case .setDeviceHoursResponse:
+            return .setResponse
         }
     }
     
@@ -360,6 +372,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .recordSensorsResponse:
             return .recordSensors
+        case .getDeviceHours:
+            return .deviceHours
+        case let .getDeviceHoursResponse(value):
+            return type(of: value).parameterID
+        case let .setDeviceHours(value):
+            return type(of: value).parameterID
+        case .setDeviceHoursResponse:
+            return .deviceHours
         }
     }
 }
@@ -599,6 +619,18 @@ public extension MessageDataBlock {
             self = .recordSensors(value)
         case (.setResponse, .recordSensors):
             self = .recordSensorsResponse
+        case (.get, .deviceHours):
+            self = .getDeviceHours
+        case (GetDeviceHoursResponse.commandClass, GetDeviceHoursResponse.parameterID):
+            guard let value = GetDeviceHoursResponse(data: parameterData)
+                else { return nil }
+            self = .getDeviceHoursResponse(value)
+        case (SetDeviceHours.commandClass, SetDeviceHours.parameterID):
+            guard let value = SetDeviceHours(data: parameterData)
+                else { return nil }
+            self = .setDeviceHours(value)
+        case (.setResponse, .deviceHours):
+            self = .setDeviceHoursResponse
         default:
             return nil
         }
@@ -722,6 +754,12 @@ internal extension MessageDataBlock {
         case let .setSensorResponse(value): return value.dataLength
         case let .recordSensors(value): return value.dataLength
         case .recordSensorsResponse:
+            return 0
+        case .getDeviceHours:
+            return 0
+        case let .getDeviceHoursResponse(value): return value.dataLength
+        case let .setDeviceHours(value): return value.dataLength
+        case .setDeviceHoursResponse:
             return 0
         }
     }
@@ -861,6 +899,14 @@ internal extension MessageDataBlock {
         case let .recordSensors(value):
             data += value
         case .recordSensorsResponse:
+            break
+        case .getDeviceHours:
+            break
+        case let .getDeviceHoursResponse(value):
+            data += value
+        case let .setDeviceHours(value):
+            data += value
+        case .setDeviceHoursResponse:
             break
         }
     }
