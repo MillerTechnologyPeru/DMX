@@ -73,6 +73,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDefaultSlotValueResponse(GetDefaultSlotValueResponse)
     case getSensorDefinition(GetSensorDefinition)
     case getSensorDefinitionResponse(GetSensorDefinitionResponse)
+    case getSensor(GetSensor)
+    case getSensorResponse(GetSensorResponse)
+    case setSensor(SetSensor)
+    case setSensorResponse(SetSensorResponse)
 }
 
 // MARK: - Properties
@@ -203,6 +207,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .getSensorDefinitionResponse(value):
             return type(of: value).commandClass
+        case let .getSensor(value):
+            return type(of: value).commandClass
+        case let .getSensorResponse(value):
+            return type(of: value).commandClass
+        case let .setSensor(value):
+            return type(of: value).commandClass
+        case let .setSensorResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -329,6 +341,14 @@ public extension MessageDataBlock {
         case let .getSensorDefinition(value):
             return type(of: value).parameterID
         case let .getSensorDefinitionResponse(value):
+            return type(of: value).parameterID
+        case let .getSensor(value):
+            return type(of: value).parameterID
+        case let .getSensorResponse(value):
+            return type(of: value).parameterID
+        case let .setSensor(value):
+            return type(of: value).parameterID
+        case let .setSensorResponse(value):
             return type(of: value).parameterID
         }
     }
@@ -547,6 +567,22 @@ public extension MessageDataBlock {
             guard let value = GetSensorDefinitionResponse(data: parameterData)
                 else { return nil }
             self = .getSensorDefinitionResponse(value)
+        case (GetSensor.commandClass, GetSensor.parameterID):
+            guard let value = GetSensor(data: parameterData)
+                else { return nil }
+            self = .getSensor(value)
+        case (GetSensorResponse.commandClass, GetSensorResponse.parameterID):
+            guard let value = GetSensorResponse(data: parameterData)
+                else { return nil }
+            self = .getSensorResponse(value)
+        case (SetSensor.commandClass, SetSensor.parameterID):
+            guard let value = SetSensor(data: parameterData)
+                else { return nil }
+            self = .setSensor(value)
+        case (SetSensorResponse.commandClass, SetSensorResponse.parameterID):
+            guard let value = SetSensorResponse(data: parameterData)
+                else { return nil }
+            self = .setSensorResponse(value)
         default:
             return nil
         }
@@ -664,6 +700,10 @@ internal extension MessageDataBlock {
         case let .getDefaultSlotValueResponse(value): return value.dataLength
         case let .getSensorDefinition(value): return value.dataLength
         case let .getSensorDefinitionResponse(value): return value.dataLength
+        case let .getSensor(value): return value.dataLength
+        case let .getSensorResponse(value): return value.dataLength
+        case let .setSensor(value): return value.dataLength
+        case let .setSensorResponse(value): return value.dataLength
         }
     }
     
@@ -790,7 +830,15 @@ internal extension MessageDataBlock {
         case let .getSensorDefinition(value):
             data += value
         case let .getSensorDefinitionResponse(value):
-        data += value
+            data += value
+        case let .getSensor(value):
+            data += value
+        case let .getSensorResponse(value):
+            data += value
+        case let .setSensor(value):
+            data += value
+        case let .setSensorResponse(value):
+            data += value
         }
     }
 }

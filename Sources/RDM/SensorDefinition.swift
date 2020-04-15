@@ -187,4 +187,3 @@ public extension SensorDefinition {
         /// Reserved (Always set to 0)
     }
 }
-
