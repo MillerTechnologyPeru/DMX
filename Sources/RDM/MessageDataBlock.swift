@@ -99,6 +99,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getLampOnModeResponse(GetLampOnModeResponse)
     case setLampOnMode(SetLampOnMode)
     case setLampOnModeResponse
+    case getDevicePowerCycles
+    case getDevicePowerCyclesResponse(GetDevicePowerCyclesResponse)
+    case setDevicePowerCycles(SetDevicePowerCycles)
+    case setDevicePowerCyclesResponse
 }
 
 // MARK: - Properties
@@ -281,6 +285,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setLampOnModeResponse:
             return .setResponse
+        case .getDevicePowerCycles:
+            return .get
+        case let .getDevicePowerCyclesResponse(value):
+            return type(of: value).commandClass
+        case let .setDevicePowerCycles(value):
+            return type(of: value).commandClass
+        case .setDevicePowerCyclesResponse:
+            return .setResponse
         }
     }
     
@@ -460,6 +472,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setLampOnModeResponse:
             return .lampOnMode
+        case .getDevicePowerCycles:
+            return .devicePowerCycles
+        case let .getDevicePowerCyclesResponse(value):
+            return type(of: value).parameterID
+        case let .setDevicePowerCycles(value):
+            return type(of: value).parameterID
+        case .setDevicePowerCyclesResponse:
+            return .devicePowerCycles
         }
     }
 }
@@ -759,6 +779,18 @@ public extension MessageDataBlock {
             self = .setLampOnMode(value)
         case (.setResponse, .lampOnMode):
             self = .setLampOnModeResponse
+        case (.get, .devicePowerCycles):
+            self = .getDevicePowerCycles
+        case (GetDevicePowerCyclesResponse.commandClass, GetDevicePowerCyclesResponse.parameterID):
+            guard let value = GetDevicePowerCyclesResponse(data: parameterData)
+                else { return nil }
+            self = .getDevicePowerCyclesResponse(value)
+        case (SetDevicePowerCycles.commandClass, SetDevicePowerCycles.parameterID):
+            guard let value = SetDevicePowerCycles(data: parameterData)
+                else { return nil }
+            self = .setDevicePowerCycles(value)
+        case (.setResponse, .devicePowerCycles):
+            self = .setDevicePowerCyclesResponse
         default:
             return nil
         }
@@ -912,6 +944,12 @@ internal extension MessageDataBlock {
         case let .getLampOnModeResponse(value): return value.dataLength
         case let .setLampOnMode(value): return value.dataLength
         case .setLampOnModeResponse:
+            return 0
+        case .getDevicePowerCycles:
+            return 0
+        case let .getDevicePowerCyclesResponse(value): return value.dataLength
+        case let .setDevicePowerCycles(value): return value.dataLength
+        case .setDevicePowerCyclesResponse:
             return 0
         }
     }
@@ -1091,6 +1129,14 @@ internal extension MessageDataBlock {
         case let .setLampOnMode(value):
             data += value
         case .setLampOnModeResponse:
+            break
+        case .getDevicePowerCycles:
+            break
+        case let .getDevicePowerCyclesResponse(value):
+            data += value
+        case let .setDevicePowerCycles(value):
+            data += value
+        case .setDevicePowerCyclesResponse:
             break
         }
     }
