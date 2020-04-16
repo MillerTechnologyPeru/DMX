@@ -123,6 +123,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getPanTiltSwapResponse(GetPanTiltSwapResponse)
     case setPanTiltSwap(SetPanTiltSwap)
     case setPanTiltSwapResponse
+    case getDeviceRealTimeClock
+    case getDeviceRealTimeClockResponse(GetDeviceRealTimeClockResponse)
+    case setDeviceRealTimeClock(SetDeviceRealTimeClock)
+    case setDeviceRealTimeClockResponse
 }
 
 // MARK: - Properties
@@ -353,6 +357,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setPanTiltSwapResponse:
             return .setResponse
+        case .getDeviceRealTimeClock:
+            return .get
+        case let .getDeviceRealTimeClockResponse(value):
+            return type(of: value).commandClass
+        case let .setDeviceRealTimeClock(value):
+            return type(of: value).commandClass
+        case .setDeviceRealTimeClockResponse:
+            return .setResponse
         }
     }
     
@@ -580,6 +592,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setPanTiltSwapResponse:
             return .panTiltSwap
+        case .getDeviceRealTimeClock:
+            return .realTimeClock
+        case let .getDeviceRealTimeClockResponse(value):
+            return type(of: value).parameterID
+        case let .setDeviceRealTimeClock(value):
+            return type(of: value).parameterID
+        case .setDeviceRealTimeClockResponse:
+            return .realTimeClock
         }
     }
 }
@@ -951,6 +971,18 @@ public extension MessageDataBlock {
             self = .setPanTiltSwap(value)
         case (.setResponse, .panTiltSwap):
             self = .setPanTiltSwapResponse
+        case (.get, .realTimeClock):
+            self = .getDeviceRealTimeClock
+        case (GetDeviceRealTimeClockResponse.commandClass, GetDeviceRealTimeClockResponse.parameterID):
+            guard let value = GetDeviceRealTimeClockResponse(data: parameterData)
+                else { return nil }
+            self = .getDeviceRealTimeClockResponse(value)
+        case (SetDeviceRealTimeClock.commandClass, SetDeviceRealTimeClock.parameterID):
+            guard let value = SetDeviceRealTimeClock(data: parameterData)
+                else { return nil }
+            self = .setDeviceRealTimeClock(value)
+        case (.setResponse, .realTimeClock):
+            self = .setDeviceRealTimeClockResponse
         default:
             return nil
         }
@@ -1140,6 +1172,12 @@ internal extension MessageDataBlock {
         case let .getPanTiltSwapResponse(value): return value.dataLength
         case let .setPanTiltSwap(value): return value.dataLength
         case .setPanTiltSwapResponse:
+            return 0
+        case .getDeviceRealTimeClock:
+            return 0
+        case let .getDeviceRealTimeClockResponse(value): return value.dataLength
+        case let .setDeviceRealTimeClock(value): return value.dataLength
+        case .setDeviceRealTimeClockResponse:
             return 0
         }
     }
@@ -1367,6 +1405,14 @@ internal extension MessageDataBlock {
         case let .setPanTiltSwap(value):
             data += value
         case .setPanTiltSwapResponse:
+            break
+        case .getDeviceRealTimeClock:
+            break
+        case let .getDeviceRealTimeClockResponse(value):
+            data += value
+        case let .setDeviceRealTimeClock(value):
+            data += value
+        case .setDeviceRealTimeClockResponse:
             break
         }
     }
