@@ -107,6 +107,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDisplayInvertResponse(GetDisplayInvertResponse)
     case setDisplayInvert(SetDisplayInvert)
     case setDisplayInvertResponse
+    case getDisplayLevel
+    case getDisplayLevelResponse(GetDisplayLevelResponse)
+    case setDisplayLevel(SetDisplayLevel)
+    case setDisplayLevelResponse
 }
 
 // MARK: - Properties
@@ -305,6 +309,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDisplayInvertResponse:
             return .setResponse
+        case .getDisplayLevel:
+            return .get
+        case let .getDisplayLevelResponse(value):
+            return type(of: value).commandClass
+        case let .setDisplayLevel(value):
+            return type(of: value).commandClass
+        case .setDisplayLevelResponse:
+            return .setResponse
         }
     }
     
@@ -500,6 +512,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDisplayInvertResponse:
             return .displayInvert
+        case .getDisplayLevel:
+            return .displayLevel
+        case let .getDisplayLevelResponse(value):
+            return type(of: value).parameterID
+        case let .setDisplayLevel(value):
+            return type(of: value).parameterID
+        case .setDisplayLevelResponse:
+            return .displayLevel
         }
     }
 }
@@ -823,6 +843,18 @@ public extension MessageDataBlock {
             self = .setDisplayInvert(value)
         case (.setResponse, .displayInvert):
             self = .setDisplayInvertResponse
+        case (.get, .displayLevel):
+            self = .getDisplayLevel
+        case (GetDisplayLevelResponse.commandClass, GetDisplayLevelResponse.parameterID):
+            guard let value = GetDisplayLevelResponse(data: parameterData)
+                else { return nil }
+            self = .getDisplayLevelResponse(value)
+        case (SetDisplayLevel.commandClass, SetDisplayLevel.parameterID):
+            guard let value = SetDisplayLevel(data: parameterData)
+                else { return nil }
+            self = .setDisplayLevel(value)
+        case (.setResponse, .displayLevel):
+            self = .setDisplayLevelResponse
         default:
             return nil
         }
@@ -988,6 +1020,12 @@ internal extension MessageDataBlock {
         case let .getDisplayInvertResponse(value): return value.dataLength
         case let .setDisplayInvert(value): return value.dataLength
         case .setDisplayInvertResponse:
+            return 0
+        case .getDisplayLevel:
+            return 0
+        case let .getDisplayLevelResponse(value): return value.dataLength
+        case let .setDisplayLevel(value): return value.dataLength
+        case .setDisplayLevelResponse:
             return 0
         }
     }
@@ -1183,6 +1221,14 @@ internal extension MessageDataBlock {
         case let .setDisplayInvert(value):
             data += value
         case .setDisplayInvertResponse:
+            break
+        case .getDisplayLevel:
+            break
+        case let .getDisplayLevelResponse(value):
+            data += value
+        case let .setDisplayLevel(value):
+            data += value
+        case .setDisplayLevelResponse:
             break
         }
     }
