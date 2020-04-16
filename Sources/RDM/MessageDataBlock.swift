@@ -115,6 +115,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getPanInvertResponse(GetPanInvertResponse)
     case setPanInvert(SetPanInvert)
     case setPanInvertResponse
+    case getTiltInvert
+    case getTiltInvertResponse(GetTiltInvertResponse)
+    case setTiltInvert(SetTiltInvert)
+    case setTiltInvertResponse
 }
 
 // MARK: - Properties
@@ -329,6 +333,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setPanInvertResponse:
             return .setResponse
+        case .getTiltInvert:
+            return .get
+        case let .getTiltInvertResponse(value):
+            return type(of: value).commandClass
+        case let .setTiltInvert(value):
+            return type(of: value).commandClass
+        case .setTiltInvertResponse:
+            return .setResponse
         }
     }
     
@@ -540,6 +552,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setPanInvertResponse:
             return .panInvert
+        case .getTiltInvert:
+            return .tiltInvert
+        case let .getTiltInvertResponse(value):
+            return type(of: value).parameterID
+        case let .setTiltInvert(value):
+            return type(of: value).parameterID
+        case .setTiltInvertResponse:
+            return .tiltInvert
         }
     }
 }
@@ -887,6 +907,18 @@ public extension MessageDataBlock {
             self = .setPanInvert(value)
         case (.setResponse, .panInvert):
             self = .setPanInvertResponse
+        case (.get, .tiltInvert):
+            self = .getTiltInvert
+        case (GetTiltInvertResponse.commandClass, GetTiltInvertResponse.parameterID):
+            guard let value = GetTiltInvertResponse(data: parameterData)
+                else { return nil }
+            self = .getTiltInvertResponse(value)
+        case (SetTiltInvert.commandClass, SetTiltInvert.parameterID):
+            guard let value = SetTiltInvert(data: parameterData)
+                else { return nil }
+            self = .setTiltInvert(value)
+        case (.setResponse, .tiltInvert):
+            self = .setTiltInvertResponse
         default:
             return nil
         }
@@ -1064,6 +1096,12 @@ internal extension MessageDataBlock {
         case let .getPanInvertResponse(value): return value.dataLength
         case let .setPanInvert(value): return value.dataLength
         case .setPanInvertResponse:
+            return 0
+        case .getTiltInvert:
+            return 0
+        case let .getTiltInvertResponse(value): return value.dataLength
+        case let .setTiltInvert(value): return value.dataLength
+        case .setTiltInvertResponse:
             return 0
         }
     }
@@ -1275,6 +1313,14 @@ internal extension MessageDataBlock {
         case let .setPanInvert(value):
             data += value
         case .setPanInvertResponse:
+            break
+        case .getTiltInvert:
+            break
+        case let .getTiltInvertResponse(value):
+            data += value
+        case let .setTiltInvert(value):
+            data += value
+        case .setTiltInvertResponse:
             break
         }
     }
