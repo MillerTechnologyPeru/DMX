@@ -111,6 +111,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDisplayLevelResponse(GetDisplayLevelResponse)
     case setDisplayLevel(SetDisplayLevel)
     case setDisplayLevelResponse
+    case getPanInvert
+    case getPanInvertResponse(GetPanInvertResponse)
+    case setPanInvert(SetPanInvert)
+    case setPanInvertResponse
 }
 
 // MARK: - Properties
@@ -317,6 +321,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDisplayLevelResponse:
             return .setResponse
+        case .getPanInvert:
+            return .get
+        case let .getPanInvertResponse(value):
+            return type(of: value).commandClass
+        case let .setPanInvert(value):
+            return type(of: value).commandClass
+        case .setPanInvertResponse:
+            return .setResponse
         }
     }
     
@@ -520,6 +532,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDisplayLevelResponse:
             return .displayLevel
+        case .getPanInvert:
+            return .panInvert
+        case let .getPanInvertResponse(value):
+            return type(of: value).parameterID
+        case let .setPanInvert(value):
+            return type(of: value).parameterID
+        case .setPanInvertResponse:
+            return .panInvert
         }
     }
 }
@@ -855,6 +875,18 @@ public extension MessageDataBlock {
             self = .setDisplayLevel(value)
         case (.setResponse, .displayLevel):
             self = .setDisplayLevelResponse
+        case (.get, .panInvert):
+            self = .getPanInvert
+        case (GetPanInvertResponse.commandClass, GetPanInvertResponse.parameterID):
+            guard let value = GetPanInvertResponse(data: parameterData)
+                else { return nil }
+            self = .getPanInvertResponse(value)
+        case (SetPanInvert.commandClass, SetPanInvert.parameterID):
+            guard let value = SetPanInvert(data: parameterData)
+                else { return nil }
+            self = .setPanInvert(value)
+        case (.setResponse, .panInvert):
+            self = .setPanInvertResponse
         default:
             return nil
         }
@@ -1026,6 +1058,12 @@ internal extension MessageDataBlock {
         case let .getDisplayLevelResponse(value): return value.dataLength
         case let .setDisplayLevel(value): return value.dataLength
         case .setDisplayLevelResponse:
+            return 0
+        case .getPanInvert:
+            return 0
+        case let .getPanInvertResponse(value): return value.dataLength
+        case let .setPanInvert(value): return value.dataLength
+        case .setPanInvertResponse:
             return 0
         }
     }
@@ -1229,6 +1267,14 @@ internal extension MessageDataBlock {
         case let .setDisplayLevel(value):
             data += value
         case .setDisplayLevelResponse:
+            break
+        case .getPanInvert:
+            break
+        case let .getPanInvertResponse(value):
+            data += value
+        case let .setPanInvert(value):
+            data += value
+        case .setPanInvertResponse:
             break
         }
     }
