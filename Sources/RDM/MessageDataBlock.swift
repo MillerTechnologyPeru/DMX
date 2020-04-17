@@ -131,6 +131,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getIdentifyDeviceResponse(GetIdentifyDeviceResponse)
     case setIdentifyDevice(SetIdentifyDevice)
     case setIdentifyDeviceResponse
+    case resetDevice(ResetDevice)
+    case resetDeviceResponse
 }
 
 // MARK: - Properties
@@ -377,6 +379,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setIdentifyDeviceResponse:
             return .setResponse
+        case let .resetDevice(value):
+            return type(of: value).commandClass
+        case .resetDeviceResponse:
+            return .setResponse
         }
     }
     
@@ -620,6 +626,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setIdentifyDeviceResponse:
             return .identifyDevice
+        case let .resetDevice(value):
+            return type(of: value).parameterID
+        case .resetDeviceResponse:
+            return .resetDevice
         }
     }
 }
@@ -1015,6 +1025,12 @@ public extension MessageDataBlock {
             self = .setIdentifyDevice(value)
         case (.setResponse, .identifyDevice):
             self = .setIdentifyDeviceResponse
+        case (ResetDevice.commandClass, ResetDevice.parameterID):
+            guard let value = ResetDevice(data: parameterData)
+                else { return nil }
+            self = .resetDevice(value)
+        case (.setResponse, .resetDevice):
+            self = .resetDeviceResponse
         default:
             return nil
         }
@@ -1216,6 +1232,9 @@ internal extension MessageDataBlock {
         case let .getIdentifyDeviceResponse(value): return value.dataLength
         case let .setIdentifyDevice(value): return value.dataLength
         case .setIdentifyDeviceResponse:
+            return 0
+        case let .resetDevice(value): return value.dataLength
+        case .resetDeviceResponse:
             return 0
         }
     }
@@ -1459,6 +1478,10 @@ internal extension MessageDataBlock {
         case let .setIdentifyDevice(value):
             data += value
         case .setIdentifyDeviceResponse:
+            break
+        case let .resetDevice(value):
+            data += value
+        case .resetDeviceResponse:
             break
         }
     }
