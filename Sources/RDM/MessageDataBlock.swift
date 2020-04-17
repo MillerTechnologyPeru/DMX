@@ -127,6 +127,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getDeviceRealTimeClockResponse(GetDeviceRealTimeClockResponse)
     case setDeviceRealTimeClock(SetDeviceRealTimeClock)
     case setDeviceRealTimeClockResponse
+    case getIdentifyDevice
+    case getIdentifyDeviceResponse(GetIdentifyDeviceResponse)
+    case setIdentifyDevice(SetIdentifyDevice)
+    case setIdentifyDeviceResponse
 }
 
 // MARK: - Properties
@@ -365,6 +369,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setDeviceRealTimeClockResponse:
             return .setResponse
+        case .getIdentifyDevice:
+            return .get
+        case let .getIdentifyDeviceResponse(value):
+            return type(of: value).commandClass
+        case let .setIdentifyDevice(value):
+            return type(of: value).commandClass
+        case .setIdentifyDeviceResponse:
+            return .setResponse
         }
     }
     
@@ -600,6 +612,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setDeviceRealTimeClockResponse:
             return .realTimeClock
+        case .getIdentifyDevice:
+            return .identifyDevice
+        case let .getIdentifyDeviceResponse(value):
+            return type(of: value).parameterID
+        case let .setIdentifyDevice(value):
+            return type(of: value).parameterID
+        case .setIdentifyDeviceResponse:
+            return .identifyDevice
         }
     }
 }
@@ -983,6 +1003,18 @@ public extension MessageDataBlock {
             self = .setDeviceRealTimeClock(value)
         case (.setResponse, .realTimeClock):
             self = .setDeviceRealTimeClockResponse
+        case (.get, .identifyDevice):
+            self = .getIdentifyDevice
+        case (GetIdentifyDeviceResponse.commandClass, GetIdentifyDeviceResponse.parameterID):
+            guard let value = GetIdentifyDeviceResponse(data: parameterData)
+                else { return nil }
+            self = .getIdentifyDeviceResponse(value)
+        case (SetIdentifyDevice.commandClass, SetIdentifyDevice.parameterID):
+            guard let value = SetIdentifyDevice(data: parameterData)
+                else { return nil }
+            self = .setIdentifyDevice(value)
+        case (.setResponse, .identifyDevice):
+            self = .setIdentifyDeviceResponse
         default:
             return nil
         }
@@ -1178,6 +1210,12 @@ internal extension MessageDataBlock {
         case let .getDeviceRealTimeClockResponse(value): return value.dataLength
         case let .setDeviceRealTimeClock(value): return value.dataLength
         case .setDeviceRealTimeClockResponse:
+            return 0
+        case .getIdentifyDevice:
+            return 0
+        case let .getIdentifyDeviceResponse(value): return value.dataLength
+        case let .setIdentifyDevice(value): return value.dataLength
+        case .setIdentifyDeviceResponse:
             return 0
         }
     }
@@ -1413,6 +1451,14 @@ internal extension MessageDataBlock {
         case let .setDeviceRealTimeClock(value):
             data += value
         case .setDeviceRealTimeClockResponse:
+            break
+        case .getIdentifyDevice:
+            break
+        case let .getIdentifyDeviceResponse(value):
+            data += value
+        case let .setIdentifyDevice(value):
+            data += value
+        case .setIdentifyDeviceResponse:
             break
         }
     }
