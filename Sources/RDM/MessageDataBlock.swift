@@ -133,6 +133,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setIdentifyDeviceResponse
     case resetDevice(ResetDevice)
     case resetDeviceResponse
+    case getPowerState
+    case getPowerStateResponse(GetPowerStateResponse)
+    case setPowerState(SetPowerState)
+    case setPowerStateResponse
 }
 
 // MARK: - Properties
@@ -383,6 +387,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .resetDeviceResponse:
             return .setResponse
+        case .getPowerState:
+            return .get
+        case let .getPowerStateResponse(value):
+            return type(of: value).commandClass
+        case let .setPowerState(value):
+            return type(of: value).commandClass
+        case .setPowerStateResponse:
+            return .setResponse
         }
     }
     
@@ -630,6 +642,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .resetDeviceResponse:
             return .resetDevice
+        case .getPowerState:
+            return .powerState
+        case let .getPowerStateResponse(value):
+            return type(of: value).parameterID
+        case let .setPowerState(value):
+            return type(of: value).parameterID
+        case .setPowerStateResponse:
+            return .powerState
         }
     }
 }
@@ -1031,6 +1051,18 @@ public extension MessageDataBlock {
             self = .resetDevice(value)
         case (.setResponse, .resetDevice):
             self = .resetDeviceResponse
+        case (.get, .powerState):
+            self = .getPowerState
+        case (GetPowerStateResponse.commandClass, GetPowerStateResponse.parameterID):
+            guard let value = GetPowerStateResponse(data: parameterData)
+                else { return nil }
+            self = .getPowerStateResponse(value)
+        case (SetPowerState.commandClass, SetPowerState.parameterID):
+            guard let value = SetPowerState(data: parameterData)
+                else { return nil }
+            self = .setPowerState(value)
+        case (.setResponse, .powerState):
+            self = .setPowerStateResponse
         default:
             return nil
         }
@@ -1235,6 +1267,12 @@ internal extension MessageDataBlock {
             return 0
         case let .resetDevice(value): return value.dataLength
         case .resetDeviceResponse:
+            return 0
+        case .getPowerState:
+            return 0
+        case let .getPowerStateResponse(value): return value.dataLength
+        case let .setPowerState(value): return value.dataLength
+        case .setPowerStateResponse:
             return 0
         }
     }
@@ -1482,6 +1520,14 @@ internal extension MessageDataBlock {
         case let .resetDevice(value):
             data += value
         case .resetDeviceResponse:
+            break
+        case .getPowerState:
+            break
+        case let .getPowerStateResponse(value):
+            data += value
+        case let .setPowerState(value):
+            data += value
+        case .setPowerStateResponse:
             break
         }
     }
