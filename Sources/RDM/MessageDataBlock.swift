@@ -141,6 +141,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getPerformSelfTestResponse(GetPerformSelfTestResponse)
     case setPerformSelfTest(SetPerformSelfTest)
     case setPerformSelfTestResponse
+    case getSelfTestDescription(GetSelfTestDescription)
+    case getSelfTestDescriptionResponse(GetSelfTestDescriptionResponse)
 }
 
 // MARK: - Properties
@@ -407,6 +409,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setPerformSelfTestResponse:
             return .setResponse
+        case let .getSelfTestDescription(value):
+            return type(of: value).commandClass
+        case let .getSelfTestDescriptionResponse(value):
+            return type(of: value).commandClass
         }
     }
     
@@ -670,6 +676,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setPerformSelfTestResponse:
             return .performSelfTest
+        case let .getSelfTestDescription(value):
+            return type(of: value).parameterID
+        case let .getSelfTestDescriptionResponse(value):
+            return type(of: value).parameterID
         }
     }
 }
@@ -1095,6 +1105,14 @@ public extension MessageDataBlock {
             self = .setPerformSelfTest(value)
         case (.setResponse, .performSelfTest):
             self = .setPerformSelfTestResponse
+        case (GetSelfTestDescription.commandClass, GetSelfTestDescription.parameterID):
+            guard let value = GetSelfTestDescription(data: parameterData)
+                else { return nil }
+            self = .getSelfTestDescription(value)
+        case (GetSelfTestDescriptionResponse.commandClass, GetSelfTestDescriptionResponse.parameterID):
+            guard let value = GetSelfTestDescriptionResponse(data: parameterData)
+                else { return nil }
+            self = .getSelfTestDescriptionResponse(value)
         default:
             return nil
         }
@@ -1312,6 +1330,8 @@ internal extension MessageDataBlock {
         case let .setPerformSelfTest(value): return value.dataLength
         case .setPerformSelfTestResponse:
             return 0
+        case let .getSelfTestDescription(value): return value.dataLength
+        case let .getSelfTestDescriptionResponse(value): return value.dataLength
         }
     }
     
@@ -1575,6 +1595,10 @@ internal extension MessageDataBlock {
             data += value
         case .setPerformSelfTestResponse:
             break
+        case let .getSelfTestDescription(value):
+            data += value
+        case let .getSelfTestDescriptionResponse(value):
+            data += value
         }
     }
 }
