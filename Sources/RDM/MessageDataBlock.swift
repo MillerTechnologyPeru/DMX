@@ -137,6 +137,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getPowerStateResponse(GetPowerStateResponse)
     case setPowerState(SetPowerState)
     case setPowerStateResponse
+    case getPerformSelfTest
+    case getPerformSelfTestResponse(GetPerformSelfTestResponse)
+    case setPerformSelfTest(SetPerformSelfTest)
+    case setPerformSelfTestResponse
 }
 
 // MARK: - Properties
@@ -395,6 +399,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .setPowerStateResponse:
             return .setResponse
+        case .getPerformSelfTest:
+            return .get
+        case let .getPerformSelfTestResponse(value):
+            return type(of: value).commandClass
+        case let .setPerformSelfTest(value):
+            return type(of: value).commandClass
+        case .setPerformSelfTestResponse:
+            return .setResponse
         }
     }
     
@@ -650,6 +662,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .setPowerStateResponse:
             return .powerState
+        case .getPerformSelfTest:
+            return .performSelfTest
+        case let .getPerformSelfTestResponse(value):
+            return type(of: value).parameterID
+        case let .setPerformSelfTest(value):
+            return type(of: value).parameterID
+        case .setPerformSelfTestResponse:
+            return .performSelfTest
         }
     }
 }
@@ -1063,6 +1083,18 @@ public extension MessageDataBlock {
             self = .setPowerState(value)
         case (.setResponse, .powerState):
             self = .setPowerStateResponse
+        case (.get, .performSelfTest):
+            self = .getPerformSelfTest
+        case (GetPerformSelfTestResponse.commandClass, GetPerformSelfTestResponse.parameterID):
+            guard let value = GetPerformSelfTestResponse(data: parameterData)
+                else { return nil }
+            self = .getPerformSelfTestResponse(value)
+        case (SetPerformSelfTest.commandClass, SetPerformSelfTest.parameterID):
+            guard let value = SetPerformSelfTest(data: parameterData)
+                else { return nil }
+            self = .setPerformSelfTest(value)
+        case (.setResponse, .performSelfTest):
+            self = .setPerformSelfTestResponse
         default:
             return nil
         }
@@ -1273,6 +1305,12 @@ internal extension MessageDataBlock {
         case let .getPowerStateResponse(value): return value.dataLength
         case let .setPowerState(value): return value.dataLength
         case .setPowerStateResponse:
+            return 0
+        case .getPerformSelfTest:
+            return 0
+        case let .getPerformSelfTestResponse(value): return value.dataLength
+        case let .setPerformSelfTest(value): return value.dataLength
+        case .setPerformSelfTestResponse:
             return 0
         }
     }
@@ -1528,6 +1566,14 @@ internal extension MessageDataBlock {
         case let .setPowerState(value):
             data += value
         case .setPowerStateResponse:
+            break
+        case .getPerformSelfTest:
+            break
+        case let .getPerformSelfTestResponse(value):
+            data += value
+        case let .setPerformSelfTest(value):
+            data += value
+        case .setPerformSelfTestResponse:
             break
         }
     }
