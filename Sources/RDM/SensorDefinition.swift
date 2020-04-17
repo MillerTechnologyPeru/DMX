@@ -122,7 +122,9 @@ public extension SensorDefinition {
         self.sensorRequested = sensorNumber
         self.sensorType = SensorType(rawValue: data[1])
         self.unit = SensorUnit(rawValue: data[2])
-        self.prefix = SensorUnitPrefix(rawValue: data[3])
+        guard let sensorPrefix = SensorUnitPrefix(rawValue: data[3])
+        else { return nil }
+        self.prefix = sensorPrefix
         self.rangeMinimumValue = Int16(bigEndian: Int16(bytes: (data[4], data[5])))
         self.rangeMaximumValue = Int16(bigEndian: Int16(bytes: (data[6], data[7])))
         self.normalMinimumValue = Int16(bigEndian: Int16(bytes: (data[8], data[9])))

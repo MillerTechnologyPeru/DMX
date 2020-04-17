@@ -117,7 +117,9 @@ extension ParameterDescription {
         self.filler = data[5]
         assert(data[5] == 0)
         self.unit = SensorUnit(rawValue: data[6])
-        self.prefix = SensorUnitPrefix(rawValue: data[7])
+        guard let sensorPrefix = SensorUnitPrefix(rawValue: data[7])
+            else { return nil }
+        self.prefix = sensorPrefix
         self.minValidValue = UInt32(bigEndian: UInt32(bytes: (data[8], data[9], data[10], data[11])))
         self.maxValidValue = UInt32(bigEndian: UInt32(bytes: (data[12], data[13], data[14], data[15])))
         self.maxDefaultValue = UInt32(bigEndian: UInt32(bytes: (data[16], data[17], data[18], data[19])))
