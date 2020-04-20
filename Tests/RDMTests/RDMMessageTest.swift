@@ -67,7 +67,9 @@ final class RDMMessageTest: XCTestCase {
         ("testSetDMX512StartingAddress", testSetDMX512StartingAddress),
         ("testSetDMX512StartingAddressResponse", testSetDMX512StartingAddressResponse),
         ("testGetSlotInfo", testGetSlotInfo),
-        ("testGetSlotInfoResponse", testGetSlotInfoResponse)
+        ("testGetSlotInfoResponse", testGetSlotInfoResponse),
+        ("testGetSlotDescription", testGetSlotDescription),
+        ("testGetSlotDescriptionResponse", testGetSlotDescriptionResponse),
     ]
     
     func testDataCheckSum() {
@@ -1813,6 +1815,82 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSlotDescription() {
+        
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x01, 0x21, 0x02, 0x04, 0x08, 0x06, 0x66])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSlotDescription(.init(slotRequested: .douser))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .slotDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSlotDescriptionResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x20, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x01, 0x21, 0x08, 0x04, 0x08, 0x44, 0x6F, 0x75, 0x73, 0x65, 0x72, 0x08, 0xE4])
+        
+        let slotDescription = SlotDescription(
+            slotResquested: .douser,
+            description: SlotID.douser.description
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getSlotDescriptionResponse(.init(slotDescription: slotDescription))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .slotDescription)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
