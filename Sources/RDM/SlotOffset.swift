@@ -27,14 +27,22 @@ public struct SlotOffset: Equatable, Hashable {
     
     // MARK: - Initialization
     
-    internal init(offsetField field1: UInt16, slot field2: UInt8) {
+    fileprivate init(field1: UInt16, field2: UInt8) {
         
         self.field1 = field1
         self.field2 = field2
     }
     
+    /// - Parameter slotID: SlotID
+    /// - Parameter slotType: SlotIDType
     public init(slotID field1: SlotID, slotType field2: SlotIDType) {
-        self.init(offsetField: field1.rawValue, slot: field2.rawValue)
+        self.init(field1: field1.rawValue, field2: field2.rawValue)
+    }
+    
+    /// - Parameter offsetField: Slot Offset
+    /// - Parameter defaultSlotValue: Default Slot Value
+    public init(offsetField field1: UInt16, defaultSlotValue field2: UInt8) {
+        self.init(field1: field1, field2: field2)
     }
 }
 
