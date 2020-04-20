@@ -49,7 +49,7 @@ public extension SlotInfo {
     
     init?(data: Data) {
         guard data.count == type(of: self).length,
-              let offset = SlotOffset(data: data.subdata(in: 0 ..< SlotOffset.length))
+              let offset = SlotOffset(data: data.subdataNoCopy(in: 0 ..< SlotOffset.length))
             else { return nil }
         self.offset = offset
         self.slotLabel = UInt16(bigEndian: UInt16(bytes: (data[3], data[4])))

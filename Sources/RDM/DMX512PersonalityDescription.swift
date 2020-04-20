@@ -25,26 +25,24 @@ public struct DMX512PersonalityDescription: Equatable, Hashable {
     public var slots: DMX512Footprint
     
     /// Personality Description
-    public var description: String
+    public var description: TextDescription
     
     // MARK: - Initialization
     
     init(personality: UInt8,
          slots: DMX512Footprint,
-         description: String) {
+         description: TextDescription) {
         assert(personality != 0)
         self.personality = personality
         assert(DMX512Footprint.range.contains(slots))
         self.slots = slots
-        self.description = description.count > type(of: self).descriptionMaxLength ? String(description.prefix(type(of: self).descriptionMaxLength)) : description
+        self.description = description
     }
 }
 
 // MARK: - Data
 
 public extension DMX512PersonalityDescription {
-    
-    internal static var descriptionMaxLength: Int { return 32 }
     
     internal static var maxLength: Int { return 35 }
     
@@ -53,16 +51,9 @@ public extension DMX512PersonalityDescription {
     init?(data: Data) {
         guard data.count > type(of: self).minLength, data.count <= type(of: self).maxLength
             else { return nil }
-        let length = data.count - type(of: self).minLength
         self.personality = data[0]
         self.slots = DMX512Footprint(rawValue: UInt16(bigEndian: UInt16(bytes: (data[1], data[2]))))
-        if length > 0 {
-            guard let string = String(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count), encoding: .utf8)
-                else { return nil }
-            self.description = string
-        } else {
-            self.description = ""
-        }
+        self.description = TextDescription(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count)) ?? ""
     }
     
     var data: Data {
@@ -75,15 +66,12 @@ public extension DMX512PersonalityDescription {
 extension DMX512PersonalityDescription: DataConvertible {
     
     var dataLength: Int {
-        return type(of: self).minLength + description.utf8.count
+        return type(of: self).minLength + description.dataLength
     }
     
     static func += (data: inout Data, value: Self) {
         data += value.personality
         data += value.slots.rawValue.bigEndian
-        let utf8 = value.description
-            .prefix(type(of: value).descriptionMaxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.description
     }
 }

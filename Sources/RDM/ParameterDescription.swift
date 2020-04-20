@@ -63,7 +63,7 @@ public struct ParameterDescription: Equatable, Hashable {
     public var maxDefaultValue: UInt32
     
     /// The Description field is used to describe the function of the specified PID. This text field shall be variable up to 32 characters in length.
-    public var description: String
+    public var description: TextDescription
     
     // MARK: - Initialization
     
@@ -76,7 +76,7 @@ public struct ParameterDescription: Equatable, Hashable {
                 minValidValue: UInt32,
                 maxValidValue: UInt32,
                 maxDefaultValue: UInt32,
-                description: String) {
+                description: TextDescription) {
         assert(ParameterID.manufacturerSpecific.contains(pidRequested))
         self.pidRequested = pidRequested
         self.pldSize = pldSize
@@ -95,9 +95,7 @@ public struct ParameterDescription: Equatable, Hashable {
 // MARK: - Data
 
 extension ParameterDescription {
-    
-    internal static var descriptionMaxLength: Int { return 52 }
-    
+
     internal static var maxLength: Int { return 52 }
     
     internal static var minLength: Int { return 20 }
@@ -105,7 +103,6 @@ extension ParameterDescription {
     init?(data: Data) {
         guard data.count > type(of: self).minLength, data.count <= type(of: self).maxLength
             else { return nil }
-        let descriptionLength = data.count - type(of: self).minLength
         let parameterID = ParameterID(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1]))))
         assert(ParameterID.manufacturerSpecific.contains(parameterID))
         self.pidRequested = parameterID
@@ -123,13 +120,7 @@ extension ParameterDescription {
         self.minValidValue = UInt32(bigEndian: UInt32(bytes: (data[8], data[9], data[10], data[11])))
         self.maxValidValue = UInt32(bigEndian: UInt32(bytes: (data[12], data[13], data[14], data[15])))
         self.maxDefaultValue = UInt32(bigEndian: UInt32(bytes: (data[16], data[17], data[18], data[19])))
-        if descriptionLength > 0 {
-            guard let string = String(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count), encoding: .utf8)
-                else { return nil }
-            self.description = string
-        } else {
-            self.description = ""
-        }
+        self.description = TextDescription(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count)) ?? ""
     }
     
     var data: Data {
@@ -142,7 +133,7 @@ extension ParameterDescription {
 extension ParameterDescription: DataConvertible {
     
     var dataLength: Int {
-        return ParameterDescription.minLength + description.utf8.count
+        return ParameterDescription.minLength + description.dataLength
     }
     
     static func += (data: inout Data, value: Self) {
@@ -156,9 +147,6 @@ extension ParameterDescription: DataConvertible {
         data += value.minValidValue.bigEndian
         data += value.maxValidValue.bigEndian
         data += value.maxDefaultValue.bigEndian
-        let utf8 = value.description
-            .prefix(type(of: value).descriptionMaxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.description
     }
 }

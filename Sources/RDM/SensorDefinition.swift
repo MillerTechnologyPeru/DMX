@@ -73,7 +73,7 @@ public struct SensorDefinition: Equatable, Hashable {
     ///
     /// The Description field is used to describe the function of the specified Sensor.
     /// This text field shall be variable up to 32 characters in length.
-    public var description: String
+    public var description: TextDescription
     
     // MARK: - Initialization
     
@@ -86,7 +86,7 @@ public struct SensorDefinition: Equatable, Hashable {
                 normalMinimumValue: Int16,
                 normalMaximumValue: Int16,
                 recordedValueSupport: BitMaskOptionSet<RecordedValueSupport>,
-                description: String) {
+                description: TextDescription) {
         
         assert(SensorNumber.range.contains(sensorRequested))
         self.sensorRequested = sensorRequested
@@ -98,15 +98,13 @@ public struct SensorDefinition: Equatable, Hashable {
         self.normalMinimumValue = normalMinimumValue
         self.normalMaximumValue = normalMaximumValue
         self.recordedValueSupport = recordedValueSupport
-        self.description = description.count > type(of: self).descriptionMaxLength ? String(description.prefix(type(of: self).descriptionMaxLength)) : description
+        self.description = description
     }
 }
 
 // MARK: - Data
 
 public extension SensorDefinition {
-    
-    internal static var descriptionMaxLength: Int { return 32 }
     
     internal static var maxLength: Int { return 13 } // 0D
     
@@ -116,7 +114,6 @@ public extension SensorDefinition {
         guard data.count >= type(of: self).minLength,
               data.count <= type(of: self).maxLength
             else { return nil }
-        let descriptionLength = data.count - type(of: self).minLength
         let sensorNumber = SensorNumber(rawValue: data[0])
         assert(SensorNumber.range.contains(sensorNumber))
         self.sensorRequested = sensorNumber
@@ -130,13 +127,7 @@ public extension SensorDefinition {
         self.normalMinimumValue = Int16(bigEndian: Int16(bytes: (data[8], data[9])))
         self.normalMaximumValue = Int16(bigEndian: Int16(bytes: (data[10], data[11])))
         self.recordedValueSupport = BitMaskOptionSet<RecordedValueSupport>(rawValue: data[12])
-        if descriptionLength > 0 {
-            guard let string = String(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count), encoding: .utf8)
-                else { return nil }
-            self.description = string
-        } else {
-            self.description = ""
-        }
+        self.description = TextDescription(data: data.subdataNoCopy(in: type(of: self).minLength ..< data.count)) ?? ""
     }
     
     var data: Data {
@@ -149,7 +140,7 @@ public extension SensorDefinition {
 extension SensorDefinition: DataConvertible {
     
     var dataLength: Int {
-        return type(of: self).minLength + description.utf8.count
+        return type(of: self).minLength + description.dataLength
     }
     
     static func += (data: inout Data, value: Self) {
@@ -161,10 +152,7 @@ extension SensorDefinition: DataConvertible {
         data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMinimumValue.bigEndian))
         data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMaximumValue.bigEndian))
         data += value.recordedValueSupport.rawValue
-        let utf8 = value.description
-            .prefix(type(of: value).descriptionMaxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.description
         
     }
 }
