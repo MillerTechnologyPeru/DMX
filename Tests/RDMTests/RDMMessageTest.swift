@@ -95,6 +95,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .queuedMessage)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -120,6 +124,10 @@ final class RDMMessageTest: XCTestCase {
             subDevice: .root,
             messageData: .getStatusMessages(.init(status: .error))
         )
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .statusMessages)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
         
         XCTAssertEqual(packet.data, data)
         XCTAssertEqual(packet.data.count, 27)
@@ -172,6 +180,10 @@ final class RDMMessageTest: XCTestCase {
             messageData: .getStatusMessagesResponse(.init(statusMessage: statusMessages))
         )
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .statusMessages)
+        XCTAssertEqual(packet.messageData.parameterDataLength, statusMessages.map{ $0.data.count }.reduce(0, +))
+        
         XCTAssertEqual(packet.data, data)
         XCTAssertEqual(packet.data.count, 53)
         XCTAssertEqual(packet.messageData.data, parameterData)
@@ -199,6 +211,10 @@ final class RDMMessageTest: XCTestCase {
             messageData: .getStatusIDDescription(.init(statusID: StatusMessageID.ready))
         )
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .statusIdDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -239,6 +255,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .statusIdDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, statusMessage.description.count)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -266,6 +286,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .clearStatusId)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -295,6 +319,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .clearStatusId)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -330,6 +358,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .subDeviceStatusReport)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         XCTAssertEqual(packet.data.count, 26)
@@ -358,6 +390,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .subDeviceStatusReport)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -388,6 +424,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .subDeviceStatusReport)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         XCTAssertEqual(packet.data.count, 27)
@@ -416,6 +456,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .subDeviceStatusReport)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -446,6 +490,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .supportedParameters)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         XCTAssertEqual(packet.data.count, 26)
@@ -467,6 +515,8 @@ final class RDMMessageTest: XCTestCase {
         
         let data = Data([0xCC, 0x01, 0x1E, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x03, 0x00, 0x00, 0x00, 0x21, 0x00, 0x50, 0x06, 0x10, 0x10, 0x10, 0x30, 0x00, 0x60, 0x07, 0x53])
         
+        let parameterIDs: [ParameterID] = [.powerState, .capturePreset, .deviceInfo]
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -474,10 +524,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgementOverflow,
             messageCount: 0,
             subDevice: .root,
-            messageData: .getSupportedParametersResponse(.init(parameterIDs: [.powerState, .capturePreset, .deviceInfo]))
+            messageData: .getSupportedParametersResponse(.init(parameterIDs: parameterIDs))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .supportedParameters)
+        XCTAssertEqual(packet.messageData.parameterDataLength, parameterIDs.map{ $0.data.count }.reduce(0, +))
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -511,6 +565,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .parameterDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -553,6 +611,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .parameterDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 20 + parameterDescription.description.rawValue.count)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -584,6 +646,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceInfo)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -629,6 +695,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceInfo)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 19)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -661,6 +731,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .productDetail)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -690,6 +764,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .productDetail)
+        XCTAssertEqual(packet.messageData.parameterDataLength, productDetailIDs.map{ $0.data.count }.reduce(0, +))
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -723,6 +801,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceModelDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -739,6 +821,8 @@ final class RDMMessageTest: XCTestCase {
         
         let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x80, 0x20, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x6C, 0x69, 0x6D, 0x69, 0x74, 0x65, 0x64, 0x20, 0x75, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x12, 0x59])
         
+        let modelDescription:TextDescription = "Description limited up to 32 characters"
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -746,10 +830,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgement,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .getDeviceModelDescriptionResponse(.init(modelDescription: "Description limited up to 32 characters"))
+            messageData: .getDeviceModelDescriptionResponse(.init(modelDescription: modelDescription))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceModelDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, modelDescription.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -783,6 +871,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .manufacturerLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength,0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -797,8 +889,9 @@ final class RDMMessageTest: XCTestCase {
     
     func testGetManufacturerLabelResponse() {
         
+        let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x81, 0x20, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x6C, 0x69, 0x6D, 0x69, 0x74, 0x65, 0x64, 0x20, 0x75, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x12, 0x5A])
         
-        let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x80, 0x20, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x6C, 0x69, 0x6D, 0x69, 0x74, 0x65, 0x64, 0x20, 0x75, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x12, 0x59])
+        let modelDescription:TextDescription = "Description limited up to 32 characters"
         
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
@@ -807,10 +900,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgement,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .getDeviceModelDescriptionResponse(.init(modelDescription: "Description limited up to 32 characters"))
+            messageData: .getManufacturerLabelResponse(.init(manufacturerName: modelDescription))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .manufacturerLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, modelDescription.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -844,6 +941,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -860,6 +961,8 @@ final class RDMMessageTest: XCTestCase {
         
         let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x82, 0x20, 0x41, 0x53, 0x43, 0x49, 0x49, 0x20, 0x74, 0x65, 0x78, 0x74, 0x20, 0x6C, 0x61, 0x62, 0x65, 0x6C, 0x2E, 0x20, 0x55, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x72, 0x61, 0x11, 0x1E])
         
+        let deviceLabel:TextDescription = "ASCII text label. Up to 32 characters."
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -867,10 +970,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgement,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .getDeviceLabelResponse(.init(deviceLabel: "ASCII text label. Up to 32 characters."))
+            messageData: .getDeviceLabelResponse(.init(deviceLabel: deviceLabel))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, deviceLabel.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -892,6 +999,8 @@ final class RDMMessageTest: XCTestCase {
         
         let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x00, 0x82, 0x20, 0x41, 0x53, 0x43, 0x49, 0x49, 0x20, 0x74, 0x65, 0x78, 0x74, 0x20, 0x6C, 0x61, 0x62, 0x65, 0x6C, 0x2E, 0x20, 0x55, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x72, 0x61, 0x11, 0x2E])
         
+        let deviceLabel:TextDescription = "ASCII text label. Up to 32 characters."
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -899,10 +1008,14 @@ final class RDMMessageTest: XCTestCase {
             portID: 1,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .setDeviceLabel(.init(deviceLabel: "ASCII text label. Up to 32 characters."))
+            messageData: .setDeviceLabel(.init(deviceLabel: deviceLabel))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, deviceLabel.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -936,6 +1049,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .deviceLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -963,6 +1080,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .factoryDefaults)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -992,6 +1113,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .factoryDefaults)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1019,6 +1144,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .factoryDefaults)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1052,6 +1181,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .factoryDefaults)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1079,6 +1212,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .languageCapabilities)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1118,6 +1255,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .languageCapabilities)
+        XCTAssertEqual(packet.messageData.parameterDataLength, languageCodes.map{ $0.data.count }.reduce(0, +))
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1150,6 +1291,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .language)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1177,6 +1322,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .language)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1210,6 +1359,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .language)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1242,6 +1395,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .language)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1270,6 +1427,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .softwareVersionLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1286,6 +1447,8 @@ final class RDMMessageTest: XCTestCase {
 
         let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0xC0, 0x20, 0x41, 0x53, 0x43, 0x49, 0x49, 0x20, 0x74, 0x65, 0x78, 0x74, 0x20, 0x53, 0x6F, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x20, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x20, 0x4C, 0x61, 0x62, 0x65, 0x12, 0x87])
         
+        let versionLabel:TextDescription = "ASCII text Software Version Label Up to 32 characters."
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -1293,10 +1456,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgement,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .getSoftwareVersionLabelResponse(.init(versionLabel: "ASCII text Software Version Label Up to 32 characters."))
+            messageData: .getSoftwareVersionLabelResponse(.init(versionLabel: versionLabel))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .softwareVersionLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, versionLabel.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1330,6 +1497,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .bootSoftwareVersionId)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1357,6 +1528,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .bootSoftwareVersionId)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 4)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1390,6 +1565,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .bootSoftwareVersionLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1406,6 +1585,8 @@ final class RDMMessageTest: XCTestCase {
 
         let data = Data([0xCC, 0x01, 0x38, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0xC2, 0x20, 0x41, 0x53, 0x43, 0x49, 0x49, 0x20, 0x74, 0x65, 0x78, 0x74, 0x20, 0x53, 0x6F, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x20, 0x42, 0x6F, 0x6F, 0x74, 0x20, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x12, 0xA9])
         
+        let versionLabel:TextDescription = "ASCII text Software Boot Version Label Up to 32 characters."
+        
         let packet = RDM.Packet(
             destination: DeviceUID(rawValue: "1234:56789ABC")!,
             source: DeviceUID(rawValue: "CBA9:87654321")!,
@@ -1413,10 +1594,14 @@ final class RDMMessageTest: XCTestCase {
             responseType: .acknowledgement,
             messageCount: .zero,
             subDevice: .root,
-            messageData: .getBootSoftwareVersionLabelResponse(.init(versionLabel: "ASCII text Software Boot Version Label Up to 32 characters."))
+            messageData: .getBootSoftwareVersionLabelResponse(.init(versionLabel: versionLabel))
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .bootSoftwareVersionLabel)
+        XCTAssertEqual(packet.messageData.parameterDataLength, versionLabel.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1449,6 +1634,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonality)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
 
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1482,6 +1671,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonality)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1513,6 +1706,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonality)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
 
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1545,6 +1742,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonality)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
 
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1573,6 +1774,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonalityDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1613,6 +1818,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxPersonalityDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 3 + personalityDescription.description.rawValue.count)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1645,6 +1854,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxStartAddress)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1672,6 +1885,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxStartAddress)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1705,6 +1922,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxStartAddress)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1737,6 +1958,10 @@ final class RDMMessageTest: XCTestCase {
         
         dump(packet)
         
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .dmxStartAddress)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
         
@@ -1764,6 +1989,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .slotInfo)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1815,6 +2044,10 @@ final class RDMMessageTest: XCTestCase {
         )
         
         dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .slotInfo)
+        XCTAssertEqual(packet.messageData.parameterDataLength, slotInfo.map{ $0.data.count }.reduce(0, +))
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
@@ -1874,7 +2107,7 @@ final class RDMMessageTest: XCTestCase {
         
         let slotDescription = SlotDescription(
             slotResquested: .douser,
-            description: SlotID.douser.description
+            description: TextDescription(rawValue: SlotID.douser.description)
         )
         
         let packet = RDM.Packet(
@@ -1891,6 +2124,7 @@ final class RDMMessageTest: XCTestCase {
         
         XCTAssertEqual(packet.messageData.commandClass, .getResponse)
         XCTAssertEqual(packet.messageData.parameterID, .slotDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2 + slotDescription.description.rawValue.count)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
