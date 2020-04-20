@@ -18,15 +18,12 @@ public struct GetDeviceModelDescriptionResponse: MessageDataBlockProtocol, Equat
     
     public static var parameterID: ParameterID { return .deviceModelDescription }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let modelDescription: String
+    public let modelDescription: TextDescription
     
     // MARK: - Initialization
     
-    public init(modelDescription: String) {
-        let maxLength = type(of: self).maxLength
-        self.modelDescription = modelDescription.count > maxLength ? String(modelDescription.prefix(type(of: self).maxLength)) : modelDescription
+    public init(modelDescription: TextDescription) {
+        self.modelDescription = modelDescription
     }
 }
 
@@ -35,10 +32,9 @@ public struct GetDeviceModelDescriptionResponse: MessageDataBlockProtocol, Equat
 public extension GetDeviceModelDescriptionResponse {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let string = String(data: data, encoding: .utf8)
+        guard data.count <= TextDescription.maxLength
             else { return nil }
-        self.init(modelDescription: string)
+        self.init(modelDescription: TextDescription(data: data) ?? "")
     }
     
     var data: Data {
@@ -51,14 +47,11 @@ public extension GetDeviceModelDescriptionResponse {
 extension GetDeviceModelDescriptionResponse: DataConvertible {
     
     var dataLength: Int {
-        return modelDescription.utf8.count
+        return modelDescription.dataLength
     }
     
     static func += (data: inout Data, value: GetDeviceModelDescriptionResponse) {
-        let utf8 = value.modelDescription
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.modelDescription
     }
 }
 
@@ -68,7 +61,7 @@ extension GetDeviceModelDescriptionResponse: DataConvertible {
 extension GetDeviceModelDescriptionResponse: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(modelDescription: value)
+        self.init(modelDescription: TextDescription(rawValue: value))
     }
 }
 
@@ -77,6 +70,6 @@ extension GetDeviceModelDescriptionResponse: ExpressibleByStringLiteral {
 extension GetDeviceModelDescriptionResponse: CustomStringConvertible {
     
     public var description: String {
-        return modelDescription
+        return modelDescription.rawValue
     }
 }

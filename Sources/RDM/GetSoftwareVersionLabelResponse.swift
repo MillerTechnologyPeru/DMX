@@ -22,15 +22,12 @@ public struct GetSoftwareVersionLabelResponse: MessageDataBlockProtocol, Equatab
     
     public static var parameterID: ParameterID { return .softwareVersionLabel }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let versionLabel: String
+    public let versionLabel: TextDescription
     
     // MARK: - Initialization
     
-    public init(versionLabel: String) {
-        let maxLength = type(of: self).maxLength
-        self.versionLabel = versionLabel.count > maxLength ? String(versionLabel.prefix(type(of: self).maxLength)) : versionLabel
+    public init(versionLabel: TextDescription) {
+        self.versionLabel = versionLabel
     }
 }
 
@@ -39,10 +36,9 @@ public struct GetSoftwareVersionLabelResponse: MessageDataBlockProtocol, Equatab
 public extension GetSoftwareVersionLabelResponse {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let name = String(data: data, encoding: .utf8)
+        guard data.count <= TextDescription.maxLength
             else { return nil }
-        self.init(versionLabel: name)
+        self.init(versionLabel: TextDescription(data: data) ?? "")
     }
     
     var data: Data {
@@ -55,14 +51,11 @@ public extension GetSoftwareVersionLabelResponse {
 extension GetSoftwareVersionLabelResponse: DataConvertible {
     
     var dataLength: Int {
-        return versionLabel.utf8.count
+        return versionLabel.dataLength
     }
     
     static func += (data: inout Data, value: GetSoftwareVersionLabelResponse) {
-        let utf8 = value.versionLabel
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.versionLabel
     }
 }
 
@@ -72,7 +65,7 @@ extension GetSoftwareVersionLabelResponse: DataConvertible {
 extension GetSoftwareVersionLabelResponse: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(versionLabel: value)
+        self.init(versionLabel: TextDescription(rawValue: value))
     }
 }
 
@@ -81,6 +74,6 @@ extension GetSoftwareVersionLabelResponse: ExpressibleByStringLiteral {
 extension GetSoftwareVersionLabelResponse: CustomStringConvertible {
     
     public var description: String {
-        return versionLabel
+        return versionLabel.rawValue
     }
 }

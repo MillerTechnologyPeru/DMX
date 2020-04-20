@@ -46,7 +46,7 @@ public extension SelfTestDescription {
             data.count <= type(of: self).maxLength
             else { return nil }
         self.selfTestRequested = SelfTest(rawValue: data[0])
-        self.description = TextDescription(data: data.subdata(in: type(of: self).minLength ..< data.count)) ?? TextDescription(rawValue: "")
+        self.description = TextDescription(data: data.subdata(in: type(of: self).minLength ..< data.count)) ?? ""
     }
     
     var data: Data {

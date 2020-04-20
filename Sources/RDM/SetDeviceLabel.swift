@@ -19,15 +19,12 @@ public struct SetDeviceLabel: MessageDataBlockProtocol, Equatable, Hashable {
     
     public static var parameterID: ParameterID { return .deviceLabel }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let deviceLabel: String
+    public let deviceLabel: TextDescription
     
     // MARK: - Initialization
     
-    public init(deviceLabel: String) {
-        let maxLength = type(of: self).maxLength
-        self.deviceLabel = deviceLabel.count > maxLength ? String(deviceLabel.prefix(type(of: self).maxLength)) : deviceLabel
+    public init(deviceLabel: TextDescription) {
+        self.deviceLabel = deviceLabel
     }
 }
 
@@ -36,10 +33,9 @@ public struct SetDeviceLabel: MessageDataBlockProtocol, Equatable, Hashable {
 public extension SetDeviceLabel {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let string = String(data: data, encoding: .utf8)
+        guard data.count <= TextDescription.maxLength
             else { return nil }
-        self.init(deviceLabel: string)
+        self.init(deviceLabel: TextDescription(data: data) ?? "")
     }
     
     var data: Data {
@@ -52,14 +48,11 @@ public extension SetDeviceLabel {
 extension SetDeviceLabel: DataConvertible {
     
     var dataLength: Int {
-        return deviceLabel.utf8.count
+        return deviceLabel.dataLength
     }
     
     static func += (data: inout Data, value: SetDeviceLabel) {
-        let utf8 = value.deviceLabel
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.deviceLabel
     }
 }
 
@@ -69,7 +62,7 @@ extension SetDeviceLabel: DataConvertible {
 extension SetDeviceLabel: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(deviceLabel: value)
+        self.init(deviceLabel: TextDescription(rawValue: value))
     }
 }
 
@@ -78,6 +71,6 @@ extension SetDeviceLabel: ExpressibleByStringLiteral {
 extension SetDeviceLabel: CustomStringConvertible {
     
     public var description: String {
-        return deviceLabel
+        return deviceLabel.rawValue
     }
 }

@@ -19,15 +19,12 @@ public struct GetManufacturerLabelResponse: MessageDataBlockProtocol, Equatable,
     
     public static var parameterID: ParameterID { return .manufacturerLabel }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let manufacturerName: String
+    public let manufacturerName: TextDescription
     
     // MARK: - Initialization
     
-    public init(manufacturerName: String) {
-        let maxLength = type(of: self).maxLength
-        self.manufacturerName = manufacturerName.count > maxLength ? String(manufacturerName.prefix(type(of: self).maxLength)) : manufacturerName
+    public init(manufacturerName: TextDescription) {
+        self.manufacturerName = manufacturerName
     }
 }
 
@@ -36,10 +33,9 @@ public struct GetManufacturerLabelResponse: MessageDataBlockProtocol, Equatable,
 public extension GetManufacturerLabelResponse {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let name = String(data: data, encoding: .utf8)
+        guard data.count <= TextDescription.maxLength
             else { return nil }
-        self.init(manufacturerName: name)
+        self.init(manufacturerName: TextDescription(data: data) ?? "")
     }
     
     var data: Data {
@@ -52,14 +48,11 @@ public extension GetManufacturerLabelResponse {
 extension GetManufacturerLabelResponse: DataConvertible {
     
     var dataLength: Int {
-        return manufacturerName.utf8.count
+        return manufacturerName.dataLength
     }
     
     static func += (data: inout Data, value: GetManufacturerLabelResponse) {
-        let utf8 = value.manufacturerName
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.manufacturerName
     }
 }
 
@@ -69,7 +62,7 @@ extension GetManufacturerLabelResponse: DataConvertible {
 extension GetManufacturerLabelResponse: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(manufacturerName: value)
+        self.init(manufacturerName: TextDescription(rawValue: value))
     }
 }
 
@@ -78,6 +71,6 @@ extension GetManufacturerLabelResponse: ExpressibleByStringLiteral {
 extension GetManufacturerLabelResponse: CustomStringConvertible {
     
     public var description: String {
-        return manufacturerName
+        return manufacturerName.rawValue
     }
 }

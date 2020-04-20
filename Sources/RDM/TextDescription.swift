@@ -54,3 +54,12 @@ extension TextDescription: DataConvertible {
         data.append(contentsOf: utf8)
     }
 }
+
+// MARK: - ExpressibleByStringLiteral
+
+extension TextDescription: ExpressibleByStringLiteral {
+    
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)
+    }
+}

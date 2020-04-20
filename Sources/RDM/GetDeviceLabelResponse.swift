@@ -19,15 +19,12 @@ public struct GetDeviceLabelResponse: MessageDataBlockProtocol, Equatable, Hasha
     
     public static var parameterID: ParameterID { return .deviceLabel }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let deviceLabel: String
+    public let deviceLabel: TextDescription
     
     // MARK: - Initialization
     
-    public init(deviceLabel: String) {
-        let maxLength = type(of: self).maxLength
-        self.deviceLabel = deviceLabel.count > maxLength ? String(deviceLabel.prefix(type(of: self).maxLength)) : deviceLabel
+    public init(deviceLabel: TextDescription) {
+        self.deviceLabel = deviceLabel
     }
 }
 
@@ -36,10 +33,9 @@ public struct GetDeviceLabelResponse: MessageDataBlockProtocol, Equatable, Hasha
 public extension GetDeviceLabelResponse {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let string = String(data: data, encoding: .utf8)
+        guard data.count <= TextDescription.maxLength
             else { return nil }
-        self.init(deviceLabel: string)
+        self.init(deviceLabel: TextDescription(data: data) ?? "")
     }
     
     var data: Data {
@@ -52,14 +48,11 @@ public extension GetDeviceLabelResponse {
 extension GetDeviceLabelResponse: DataConvertible {
     
     var dataLength: Int {
-        return deviceLabel.utf8.count
+        return deviceLabel.dataLength
     }
     
     static func += (data: inout Data, value: GetDeviceLabelResponse) {
-        let utf8 = value.deviceLabel
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.deviceLabel
     }
 }
 
@@ -69,7 +62,7 @@ extension GetDeviceLabelResponse: DataConvertible {
 extension GetDeviceLabelResponse: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(deviceLabel: value)
+        self.init(deviceLabel: TextDescription(rawValue: value))
     }
 }
 
@@ -78,6 +71,6 @@ extension GetDeviceLabelResponse: ExpressibleByStringLiteral {
 extension GetDeviceLabelResponse: CustomStringConvertible {
     
     public var description: String {
-        return deviceLabel
+        return deviceLabel.rawValue
     }
 }
