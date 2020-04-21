@@ -19,7 +19,7 @@ public struct SetLampHours: MessageDataBlockProtocol, Equatable, Hashable {
     
     public static var commandClass: CommandClass { return .set }
     
-    public static var parameterID: ParameterID { return .deviceHours }
+    public static var parameterID: ParameterID { return .lampHours }
     
     public let lampHours: UInt32
     
