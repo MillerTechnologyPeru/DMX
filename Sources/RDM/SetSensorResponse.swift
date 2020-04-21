@@ -33,7 +33,7 @@ public struct SetSensorResponse: MessageDataBlockProtocol, Equatable, Hashable {
 public extension SetSensorResponse {
     
     init?(data: Data) {
-        guard data.count == MemoryLayout<SensorValue>.size, let sensorValue = SensorValue(data: data)
+        guard data.count == SensorValue.length, let sensorValue = SensorValue(data: data)
             else { return nil }
         self.init(sensorValue: sensorValue)
     }

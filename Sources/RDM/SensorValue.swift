@@ -98,9 +98,9 @@ extension SensorValue: DataConvertible {
     
     static func += (data: inout Data, value: Self) {
         data += value.sensorRequested.rawValue
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.presentValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.lowestDetectedValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.highestDetectedValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.recordedValue.bigEndian))
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.presentValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.lowestDetectedValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.highestDetectedValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.recordedValue.bigEndian)).bigEndian
     }
 }
