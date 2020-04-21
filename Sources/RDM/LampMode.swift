@@ -50,16 +50,16 @@ public extension LampMode {
     /// DMX
     ///
     /// Lamp Strikes upon receiving a DMX512 signal.
-    static var dmx: LampMode { return 0x00 } // LAMP_ON_MODE_DMX
+    static var dmx: LampMode { return 0x01 } // LAMP_ON_MODE_DMX
     
     /// ON
     ///
     /// Lamp Strikes automatically at Power-up.
-    static var on: LampMode { return 0x00 } // LAMP_ON_MODE_ON
+    static var on: LampMode { return 0x02 } // LAMP_ON_MODE_ON
     
     /// After Calibration
     /// Lamp Strikes after Calibration or Homing procedure.
-    static var afterCalibration: LampMode { return 0x00 } // LAMP_ON_MODE_AFTER_CAL
+    static var afterCalibration: LampMode { return 0x03 } // LAMP_ON_MODE_AFTER_CAL
     
     /// Manufacturer-Specific Units `0x80 - 0xDF`
 }
