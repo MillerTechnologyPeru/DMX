@@ -72,6 +72,8 @@ final class RDMMessageTest: XCTestCase {
         ("testGetSlotDescriptionResponse", testGetSlotDescriptionResponse),
         ("testGetDefaultSlotValue", testGetDefaultSlotValue),
         ("testGetDefaultSlotValueResponse", testGetDefaultSlotValueResponse),
+        ("testSensorDefinition", testSensorDefinition),
+        ("testSensorDefinitionResponse", testSensorDefinitionResponse),
     ]
     
     func testDataCheckSum() {
@@ -2212,6 +2214,87 @@ final class RDMMessageTest: XCTestCase {
         XCTAssertEqual(packet.messageData.commandClass, .getResponse)
         XCTAssertEqual(packet.messageData.parameterID, .defaultSlotValue)
         XCTAssertEqual(packet.messageData.parameterDataLength, slotOffsets.map{ $0.data.count }.reduce(0, +))
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSensorDefinition() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x02, 0x00, 0x01, 0x01, 0x06, 0x39])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSensorDefinition(.init(sensorRequested: SensorNumber(rawValue: 1)))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .sensorDefinition)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSensorDefinitionResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x45, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x02, 0x00, 0x2D, 0x01, 0x0D, 0x12, 0x14, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x5B, 0x56, 0x61, 0x72, 0x69, 0x61, 0x62, 0x6C, 0x65, 0x20, 0x30, 0x2D, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x72, 0x73, 0x12, 0x03])
+        
+        let sensorDefinition = SensorDefinition(
+            sensorRequested: SensorNumber(rawValue: 1),
+            sensorType: SensorType.force,
+            unit: SensorUnit.newton,
+            prefix: SensorUnitPrefix.mega,
+            rangeMinimumValue: 0,
+            rangeMaximumValue: 512,
+            normalMinimumValue: 0,
+            normalMaximumValue: 512,
+            recordedValueSupport: [.recordedValueSupported, .detectedValuesSupported],
+            description: "Description [Variable 0-32 chars]"
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: .zero,
+            subDevice: .root,
+            messageData: .getSensorDefinitionResponse(.init(sensorDefinition: sensorDefinition))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .sensorDefinition)
+        XCTAssertEqual(packet.messageData.parameterDataLength, sensorDefinition.dataLength)
         
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)

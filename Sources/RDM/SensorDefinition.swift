@@ -106,9 +106,9 @@ public struct SensorDefinition: Equatable, Hashable {
 
 public extension SensorDefinition {
     
-    internal static var maxLength: Int { return 13 } // 0D
+    internal static var maxLength: Int { return 45 } // 2D
     
-    internal static var minLength: Int { return 45 } // 2D
+    internal static var minLength: Int { return 13 } // 0D
     
     init?(data: Data) {
         guard data.count >= type(of: self).minLength,
@@ -145,12 +145,13 @@ extension SensorDefinition: DataConvertible {
     
     static func += (data: inout Data, value: Self) {
         data += value.sensorRequested.rawValue
+        data += value.sensorType.rawValue
         data += value.unit.rawValue
         data += value.prefix.rawValue
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.rangeMinimumValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.rangeMaximumValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMinimumValue.bigEndian))
-        data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMaximumValue.bigEndian))
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.rangeMinimumValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.rangeMaximumValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMinimumValue.bigEndian)).bigEndian
+        data += UInt16(bigEndian: UInt16 (bitPattern: value.normalMaximumValue.bigEndian)).bigEndian
         data += value.recordedValueSupport.rawValue
         data += value.description
         
