@@ -33,10 +33,10 @@ public struct GetSelfTestDescriptionResponse: MessageDataBlockProtocol, Equatabl
 
 public extension GetSelfTestDescriptionResponse {
     
-    internal static var length: Int { return MemoryLayout<SelfTestDescription>.size }
-    
     init?(data: Data) {
-        guard data.count == type(of: self).length, let selfTestDescription = SelfTestDescription(data: data)
+        guard data.count >= SelfTestDescription.minLength,
+            data.count <= SelfTestDescription.maxLength,
+            let selfTestDescription = SelfTestDescription(data: data)
             else { return nil }
         self.init(selfTestDescription: selfTestDescription)
     }

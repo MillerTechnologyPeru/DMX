@@ -142,6 +142,8 @@ final class RDMMessageTest: XCTestCase {
         ("testGetPerformSelfTestsResponse", testGetPerformSelfTestsResponse),
         ("testSetPerformSelfTests", testSetPerformSelfTests),
         ("testSetPerformSelfTestsResponse", testSetPerformSelfTestsResponse),
+        ("testGetSelfTestDescription", testGetSelfTestDescription),
+        ("testGetSelfTestDescriptionResponse", testGetSelfTestDescriptionResponse),
     ]
     
     func testDataCheckSum() {
@@ -4726,6 +4728,83 @@ final class RDMMessageTest: XCTestCase {
 
         XCTAssertEqual(packet.data, data)
         XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSelfTestDescription() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x10, 0x21, 0x01, 0x01, 0x06, 0x68])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSelfTestDescription(.init(selfTestRequested: 1))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .selfTestDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetSelfTestDescriptionResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x39, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x10, 0x21, 0x21, 0x01, 0x41, 0x53, 0x43, 0x49, 0x49, 0x20, 0x74, 0x65, 0x78, 0x74, 0x20, 0x6C, 0x61, 0x62, 0x65, 0x6C, 0x2E, 0x20, 0x55, 0x70, 0x20, 0x74, 0x6F, 0x20, 0x33, 0x32, 0x20, 0x63, 0x68, 0x61, 0x72, 0x61, 0x10, 0xD0])
+        
+        let selfTestDescription = SelfTestDescription(
+            selfTestRequested: 1,
+            description: "ASCII text label. Up to 32 characters."
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getSelfTestDescriptionResponse(.init(selfTestDescription: selfTestDescription))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .selfTestDescription)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1 + selfTestDescription.description.rawValue.count)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
         
         guard let decodedPacket = RDM.Packet(data: data)
             else { XCTFail("Could not parse packet"); return }
