@@ -52,6 +52,73 @@ public struct RealTimeClock: Equatable, Hashable {
     }
 }
 
+// MARK: - Date conversion
+
+public extension RealTimeClock {
+    
+    /// Calendar
+    private static var calendar: Calendar {
+        
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+    
+    /// Initialize with the current date.
+    init() {
+        
+        self.init(date: Date())
+    }
+    
+    /// Initialize with the specified date.
+    init(date: Date) {
+        
+        let calendar = type(of: self).calendar
+        
+        let dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second],
+                                                     from: date)
+        
+        guard let dateTime = RealTimeClock(dateComponents: dateComponents)
+            else { fatalError("Could not create \(RealTimeClock.self) from \(date)") }
+        
+        self = dateTime
+    }
+    
+    /// Initialize with the specified `DateComponents`.
+    init?(dateComponents: DateComponents) {
+        
+        guard let year = Year(rawValue: UInt16(dateComponents.year ?? .min)),
+            let month = Month(rawValue: UInt8(dateComponents.month ?? .min)),
+            let day = Day(rawValue: UInt8(dateComponents.day ?? .min)),
+            let hour = Hour(rawValue: UInt8(dateComponents.hour ?? .min)),
+            let minutes = Minute(rawValue: UInt8(dateComponents.minute ?? .min)),
+            let seconds = Second(rawValue: UInt8(dateComponents.second ?? .min))
+            else { return nil }
+        
+        self.init(year: year,
+                  month: month,
+                  day: day,
+                  hour: hour,
+                  minute: minutes,
+                  second: seconds)
+    }
+    
+    /// Date components for the date time.
+    var dateComponents: DateComponents {
+        
+        let calendar = type(of: self).calendar
+        
+        return DateComponents(calendar: calendar,
+                              timeZone: calendar.timeZone,
+                              year: Int(year.rawValue),
+                              month: Int(month.rawValue),
+                              day: Int(day.rawValue),
+                              hour: Int(hour.rawValue),
+                              minute: Int(minute.rawValue),
+                              second: Int(second.rawValue))
+    }
+}
+
 // MARK: - Data
 
 public extension RealTimeClock {
@@ -86,7 +153,7 @@ public extension RealTimeClock {
 extension RealTimeClock: DataConvertible {
     
     var dataLength: Int {
-        return StatusMessage.length
+        return type(of: self).length
     }
     
     static func += (data: inout Data, value: Self) {

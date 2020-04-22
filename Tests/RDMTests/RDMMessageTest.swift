@@ -124,6 +124,10 @@ final class RDMMessageTest: XCTestCase {
         ("testGetPanTiltSwapResponse", testGetPanTiltSwapResponse),
         ("testSetPanTiltSwap", testSetPanTiltSwap),
         ("testSetPanTiltSwapResponse", testSetPanTiltSwapResponse),
+        ("testGetDeviceRealTimeClock", testGetDeviceRealTimeClock),
+        ("testGetDeviceRealTimeClockResponse", testGetDeviceRealTimeClockResponse),
+        ("testSetDeviceRealTimeClock", testSetDeviceRealTimeClock),
+        ("testSetDeviceRealTimeClockResponse", testSetDeviceRealTimeClockResponse),
     ]
     
     func testDataCheckSum() {
@@ -4081,6 +4085,153 @@ final class RDMMessageTest: XCTestCase {
         
         XCTAssertEqual(packet.messageData.commandClass, .setResponse)
         XCTAssertEqual(packet.messageData.parameterID, .panTiltSwap)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetDeviceRealTimeClock() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x06, 0x03, 0x00, 0x06, 0x3D])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getDeviceRealTimeClock
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .realTimeClock)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetDeviceRealTimeClockResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x1F, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x06, 0x03, 0x07, 0x07, 0xD3, 0x01, 0x01, 0x00, 0x00, 0x00, 0x07, 0x27])
+        
+        let realTimeClock = RealTimeClock(
+            year: .min,
+            month: .min,
+            day: .min,
+            hour: .min,
+            minute: .min,
+            second: .min
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getDeviceRealTimeClockResponse(.init(realTimeClock: realTimeClock))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .realTimeClock)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 7)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetDeviceRealTimeClock() {
+        
+        let data = Data([0xCC, 0x01, 0x1F, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x06, 0x03, 0x07, 0x07, 0xE4, 0x04, 0x16, 0x13, 0x27, 0x36, 0x07, 0xD0])
+        
+        let realTimeClock = RealTimeClock(date: Date())
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setDeviceRealTimeClock(.init(realTimeClock: realTimeClock))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .realTimeClock)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 7)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetDeviceRealTimeClockResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x06, 0x03, 0x00, 0x06, 0x4D])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setDeviceRealTimeClockResponse
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .realTimeClock)
         XCTAssertEqual(packet.messageData.parameterDataLength, 0)
 
         XCTAssertEqual(packet.data, data)
