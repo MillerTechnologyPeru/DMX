@@ -128,6 +128,10 @@ final class RDMMessageTest: XCTestCase {
         ("testGetDeviceRealTimeClockResponse", testGetDeviceRealTimeClockResponse),
         ("testSetDeviceRealTimeClock", testSetDeviceRealTimeClock),
         ("testSetDeviceRealTimeClockResponse", testSetDeviceRealTimeClockResponse),
+        ("testGetIdentifyDevice", testGetIdentifyDevice),
+        ("testGetIdentifyDeviceResponse", testGetIdentifyDeviceResponse),
+        ("testSetIdentifyDevice", testSetIdentifyDevice),
+        ("testSetIdentifyDeviceResponse", testSetIdentifyDeviceResponse),
     ]
     
     func testDataCheckSum() {
@@ -4232,6 +4236,142 @@ final class RDMMessageTest: XCTestCase {
         
         XCTAssertEqual(packet.messageData.commandClass, .setResponse)
         XCTAssertEqual(packet.messageData.parameterID, .realTimeClock)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetIdentifyDevice() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x10, 0x00, 0x00, 0x06, 0x44])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getIdentifyDevice
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .identifyDevice)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetIdentifyDeviceResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x10, 0x00, 0x01, 0x01, 0x06, 0x47])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getIdentifyDeviceResponse(.init(identifyDevice: true))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .identifyDevice)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetIdentifyDevice() {
+        
+        let data = Data([0xCC, 0x01, 0x19, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x10, 0x00, 0x01, 0x00, 0x06, 0x56])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setIdentifyDevice(.init(identifyDevice: false))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .identifyDevice)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 1)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetIdentifyDeviceResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x10, 0x00, 0x00, 0x06, 0x54])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setIdentifyDeviceResponse
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .identifyDevice)
         XCTAssertEqual(packet.messageData.parameterDataLength, 0)
 
         XCTAssertEqual(packet.data, data)
