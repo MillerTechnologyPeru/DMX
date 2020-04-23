@@ -145,6 +145,10 @@ public enum MessageDataBlock: Equatable, Hashable {
     case getSelfTestDescriptionResponse(GetSelfTestDescriptionResponse)
     case capturePreset(CapturePreset)
     case capturePresetResponse
+    case getPresetPlayback
+    case getPresetPlaybackResponse(GetPresetPlaybackResponse)
+    case setPresetPlayback(SetPresetPlayback)
+    case setPresetPlaybackResponse
 }
 
 // MARK: - Properties
@@ -419,6 +423,14 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case .capturePresetResponse:
             return .setResponse
+        case .getPresetPlayback:
+            return .get
+        case let .getPresetPlaybackResponse(value):
+            return type(of: value).commandClass
+        case let .setPresetPlayback(value):
+            return type(of: value).commandClass
+        case .setPresetPlaybackResponse:
+            return .setResponse
         }
     }
     
@@ -690,6 +702,14 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case .capturePresetResponse:
             return .capturePreset
+        case .getPresetPlayback:
+            return .presetPlayback
+        case let .getPresetPlaybackResponse(value):
+            return type(of: value).parameterID
+        case let .setPresetPlayback(value):
+            return type(of: value).parameterID
+        case .setPresetPlaybackResponse:
+            return .presetPlayback
         }
     }
 }
@@ -1129,6 +1149,18 @@ public extension MessageDataBlock {
             self = .capturePreset(value)
         case (.setResponse, .capturePreset):
             self = .capturePresetResponse
+        case (.get, .presetPlayback):
+            self = .getPresetPlayback
+        case (GetPresetPlaybackResponse.commandClass, GetPresetPlaybackResponse.parameterID):
+            guard let value = GetPresetPlaybackResponse(data: parameterData)
+                else { return nil }
+            self = .getPresetPlaybackResponse(value)
+        case (SetPresetPlayback.commandClass, SetPresetPlayback.parameterID):
+            guard let value = SetPresetPlayback(data: parameterData)
+                else { return nil }
+            self = .setPresetPlayback(value)
+        case (.setResponse, .presetPlayback):
+            self = .setPresetPlaybackResponse
         default:
             return nil
         }
@@ -1350,6 +1382,12 @@ internal extension MessageDataBlock {
         case let .getSelfTestDescriptionResponse(value): return value.dataLength
         case let .capturePreset(value): return value.dataLength
         case .capturePresetResponse:
+            return 0
+        case .getPresetPlayback:
+            return 0
+        case let .getPresetPlaybackResponse(value): return value.dataLength
+        case let .setPresetPlayback(value): return value.dataLength
+        case .setPresetPlaybackResponse:
             return 0
         }
     }
@@ -1621,6 +1659,14 @@ internal extension MessageDataBlock {
         case let .capturePreset(value):
             data += value
         case .capturePresetResponse:
+            break
+        case .getPresetPlayback:
+            break
+        case let .getPresetPlaybackResponse(value):
+            data += value
+        case let .setPresetPlayback(value):
+            data += value
+        case .setPresetPlaybackResponse:
             break
         }
     }
