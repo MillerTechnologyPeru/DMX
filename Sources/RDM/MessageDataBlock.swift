@@ -14,6 +14,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     
     case getProxiedDeviceCount
     case getProxiedDeviceCountResponse(GetProxiedDeviceCountResponse)
+    case getProxiedDevices
+    case getProxiedDevicesResponse(GetProxiedDevicesResponse)
     case getStatusMessages(GetStatusMessages)
     case getStatusMessagesResponse(GetStatusMessagesResponse)
     case getQueueMessage(GetQueueMessage)
@@ -162,6 +164,10 @@ public extension MessageDataBlock {
         case .getProxiedDeviceCount:
             return .get
         case let .getProxiedDeviceCountResponse(value):
+            return type(of: value).commandClass
+        case .getProxiedDevices:
+            return .get
+        case let .getProxiedDevicesResponse(value):
             return type(of: value).commandClass
         case let .getStatusMessages(value):
             return type(of: value).commandClass
@@ -445,6 +451,10 @@ public extension MessageDataBlock {
         case .getProxiedDeviceCount:
             return .proxiedDevicesCount
         case let .getProxiedDeviceCountResponse(value):
+            return type(of: value).parameterID
+        case .getProxiedDevices:
+            return .proxiedDevices
+        case let .getProxiedDevicesResponse(value):
             return type(of: value).parameterID
         case let .getStatusMessages(value):
             return type(of: value).parameterID
@@ -751,6 +761,12 @@ public extension MessageDataBlock {
             guard let value = GetProxiedDeviceCountResponse(data: parameterData)
                 else { return nil }
             self = .getProxiedDeviceCountResponse(value)
+        case (.get, .proxiedDevices):
+            self = .getProxiedDevices
+        case (GetProxiedDevicesResponse.commandClass, GetProxiedDevicesResponse.parameterID):
+            guard let value = GetProxiedDevicesResponse(data: parameterData)
+                else { return nil }
+            self = .getProxiedDevicesResponse(value)
         case (GetStatusMessages.commandClass, GetStatusMessages.parameterID):
             guard let value = GetStatusMessages(data: parameterData)
                 else { return nil }
@@ -1210,6 +1226,9 @@ internal extension MessageDataBlock {
         case .getProxiedDeviceCount:
             return 0
         case let .getProxiedDeviceCountResponse(value): return value.dataLength
+        case .getProxiedDevices:
+            return 0
+        case let .getProxiedDevicesResponse(value): return value.dataLength
         case let .getStatusMessages(value): return value.dataLength
         case let .getStatusMessagesResponse(value): return value.dataLength
         case let .getQueueMessage(value): return value.dataLength
@@ -1416,6 +1435,10 @@ internal extension MessageDataBlock {
         case .getProxiedDeviceCount:
             break
         case let .getProxiedDeviceCountResponse(value):
+            data += value
+        case .getProxiedDevices:
+            break
+        case let .getProxiedDevicesResponse(value):
             data += value
         case let .getStatusMessages(value):
             data += value
