@@ -143,6 +143,8 @@ public enum MessageDataBlock: Equatable, Hashable {
     case setPerformSelfTestResponse
     case getSelfTestDescription(GetSelfTestDescription)
     case getSelfTestDescriptionResponse(GetSelfTestDescriptionResponse)
+    case capturePreset(CapturePreset)
+    case capturePresetResponse
 }
 
 // MARK: - Properties
@@ -413,6 +415,10 @@ public extension MessageDataBlock {
             return type(of: value).commandClass
         case let .getSelfTestDescriptionResponse(value):
             return type(of: value).commandClass
+        case let .capturePreset(value):
+            return type(of: value).commandClass
+        case .capturePresetResponse:
+            return .setResponse
         }
     }
     
@@ -680,6 +686,10 @@ public extension MessageDataBlock {
             return type(of: value).parameterID
         case let .getSelfTestDescriptionResponse(value):
             return type(of: value).parameterID
+        case let .capturePreset(value):
+            return type(of: value).parameterID
+        case .capturePresetResponse:
+            return .capturePreset
         }
     }
 }
@@ -1113,6 +1123,12 @@ public extension MessageDataBlock {
             guard let value = GetSelfTestDescriptionResponse(data: parameterData)
                 else { return nil }
             self = .getSelfTestDescriptionResponse(value)
+        case (CapturePreset.commandClass, CapturePreset.parameterID):
+            guard let value = CapturePreset(data: parameterData)
+                else { return nil }
+            self = .capturePreset(value)
+        case (.setResponse, .capturePreset):
+            self = .capturePresetResponse
         default:
             return nil
         }
@@ -1332,6 +1348,9 @@ internal extension MessageDataBlock {
             return 0
         case let .getSelfTestDescription(value): return value.dataLength
         case let .getSelfTestDescriptionResponse(value): return value.dataLength
+        case let .capturePreset(value): return value.dataLength
+        case .capturePresetResponse:
+            return 0
         }
     }
     
@@ -1599,6 +1618,10 @@ internal extension MessageDataBlock {
             data += value
         case let .getSelfTestDescriptionResponse(value):
             data += value
+        case let .capturePreset(value):
+            data += value
+        case .capturePresetResponse:
+            break
         }
     }
 }
