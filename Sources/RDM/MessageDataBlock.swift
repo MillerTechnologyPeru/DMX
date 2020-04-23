@@ -12,6 +12,8 @@ import Foundation
 */
 public enum MessageDataBlock: Equatable, Hashable {
     
+    case getProxiedDeviceCount
+    case getProxiedDeviceCountResponse(GetProxiedDeviceCountResponse)
     case getStatusMessages(GetStatusMessages)
     case getStatusMessagesResponse(GetStatusMessagesResponse)
     case getQueueMessage(GetQueueMessage)
@@ -157,6 +159,10 @@ public extension MessageDataBlock {
     
     var commandClass: CommandClass {
         switch self {
+        case .getProxiedDeviceCount:
+            return .get
+        case let .getProxiedDeviceCountResponse(value):
+            return type(of: value).commandClass
         case let .getStatusMessages(value):
             return type(of: value).commandClass
         case let .getStatusMessagesResponse(value):
@@ -436,6 +442,10 @@ public extension MessageDataBlock {
     
     var parameterID: ParameterID {
         switch self {
+        case .getProxiedDeviceCount:
+            return .proxiedDevicesCount
+        case let .getProxiedDeviceCountResponse(value):
+            return type(of: value).parameterID
         case let .getStatusMessages(value):
             return type(of: value).parameterID
         case let .getStatusMessagesResponse(value):
@@ -735,6 +745,12 @@ public extension MessageDataBlock {
             parameterData = Data()
         }
         switch (commandClass, parameterID) {
+        case (.get, .proxiedDevicesCount):
+            self = .getProxiedDeviceCount
+        case (GetProxiedDeviceCountResponse.commandClass, GetProxiedDeviceCountResponse.parameterID):
+            guard let value = GetProxiedDeviceCountResponse(data: parameterData)
+                else { return nil }
+            self = .getProxiedDeviceCountResponse(value)
         case (GetStatusMessages.commandClass, GetStatusMessages.parameterID):
             guard let value = GetStatusMessages(data: parameterData)
                 else { return nil }
@@ -1191,6 +1207,9 @@ internal extension MessageDataBlock {
     
     var parameterDataLength: Int {
         switch self {
+        case .getProxiedDeviceCount:
+            return 0
+        case let .getProxiedDeviceCountResponse(value): return value.dataLength
         case let .getStatusMessages(value): return value.dataLength
         case let .getStatusMessagesResponse(value): return value.dataLength
         case let .getQueueMessage(value): return value.dataLength
@@ -1394,6 +1413,10 @@ internal extension MessageDataBlock {
     
     func appendParameterData(_ data: inout Data) {
         switch self {
+        case .getProxiedDeviceCount:
+            break
+        case let .getProxiedDeviceCountResponse(value):
+            data += value
         case let .getStatusMessages(value):
             data += value
         case let .getStatusMessagesResponse(value):
