@@ -12,6 +12,7 @@ import Foundation
 */
 public enum MessageDataBlock: Equatable, Hashable {
     
+    case discoveryUniqueBranchMessage(DiscoveryUniqueBranchMessage)
     case getProxiedDeviceCount
     case getProxiedDeviceCountResponse(GetProxiedDeviceCountResponse)
     case getProxiedDevices
@@ -165,6 +166,8 @@ public extension MessageDataBlock {
     
     var commandClass: CommandClass {
         switch self {
+        case let .discoveryUniqueBranchMessage(value):
+            return type(of: value).commandClass
         case .getProxiedDeviceCount:
             return .get
         case let .getProxiedDeviceCountResponse(value):
@@ -460,6 +463,8 @@ public extension MessageDataBlock {
     
     var parameterID: ParameterID {
         switch self {
+        case let .discoveryUniqueBranchMessage(value):
+            return type(of: value).parameterID
         case .getProxiedDeviceCount:
             return .proxiedDevicesCount
         case let .getProxiedDeviceCountResponse(value):
@@ -775,6 +780,10 @@ public extension MessageDataBlock {
             parameterData = Data()
         }
         switch (commandClass, parameterID) {
+        case (DiscoveryUniqueBranchMessage.commandClass, DiscoveryUniqueBranchMessage.parameterID):
+            guard let value = DiscoveryUniqueBranchMessage(data: parameterData)
+                else { return nil }
+            self = .discoveryUniqueBranchMessage(value)
         case (.get, .proxiedDevicesCount):
             self = .getProxiedDeviceCount
         case (GetProxiedDeviceCountResponse.commandClass, GetProxiedDeviceCountResponse.parameterID):
@@ -1253,6 +1262,7 @@ internal extension MessageDataBlock {
     
     var parameterDataLength: Int {
         switch self {
+        case let .discoveryUniqueBranchMessage(value): return value.dataLength
         case .getProxiedDeviceCount:
             return 0
         case let .getProxiedDeviceCountResponse(value): return value.dataLength
@@ -1469,6 +1479,8 @@ internal extension MessageDataBlock {
     
     func appendParameterData(_ data: inout Data) {
         switch self {
+        case let .discoveryUniqueBranchMessage(value):
+            data += value
         case .getProxiedDeviceCount:
             break
         case let .getProxiedDeviceCountResponse(value):
