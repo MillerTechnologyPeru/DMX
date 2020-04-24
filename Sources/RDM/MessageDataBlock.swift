@@ -13,6 +13,10 @@ import Foundation
 public enum MessageDataBlock: Equatable, Hashable {
     
     case discoveryUniqueBranchMessage(DiscoveryUniqueBranchMessage)
+    case discoveryMuteMessage
+    case discoveryMuteMessageResponse(DiscoveryMuteMessageResponse)
+    case discoveryUnMuteMessage
+    case discoveryUnMuteMessageResponse(DiscoveryUnMuteMessageResponse)
     case getProxiedDeviceCount
     case getProxiedDeviceCountResponse(GetProxiedDeviceCountResponse)
     case getProxiedDevices
@@ -167,6 +171,14 @@ public extension MessageDataBlock {
     var commandClass: CommandClass {
         switch self {
         case let .discoveryUniqueBranchMessage(value):
+            return type(of: value).commandClass
+        case .discoveryMuteMessage:
+            return .discovery
+        case let .discoveryMuteMessageResponse(value):
+            return type(of: value).commandClass
+        case .discoveryUnMuteMessage:
+            return .discovery
+        case let .discoveryUnMuteMessageResponse(value):
             return type(of: value).commandClass
         case .getProxiedDeviceCount:
             return .get
@@ -464,6 +476,14 @@ public extension MessageDataBlock {
     var parameterID: ParameterID {
         switch self {
         case let .discoveryUniqueBranchMessage(value):
+            return type(of: value).parameterID
+        case .discoveryMuteMessage:
+            return .mute
+        case let .discoveryMuteMessageResponse(value):
+            return type(of: value).parameterID
+        case .discoveryUnMuteMessage:
+            return .unMute
+        case let .discoveryUnMuteMessageResponse(value):
             return type(of: value).parameterID
         case .getProxiedDeviceCount:
             return .proxiedDevicesCount
@@ -784,6 +804,18 @@ public extension MessageDataBlock {
             guard let value = DiscoveryUniqueBranchMessage(data: parameterData)
                 else { return nil }
             self = .discoveryUniqueBranchMessage(value)
+        case (.discovery, .mute):
+            self = .discoveryMuteMessage
+        case (DiscoveryMuteMessageResponse.commandClass, DiscoveryMuteMessageResponse.parameterID):
+            guard let value = DiscoveryMuteMessageResponse(data: parameterData)
+                else { return nil }
+            self = .discoveryMuteMessageResponse(value)
+        case (.discovery, .unMute):
+            self = .discoveryUnMuteMessage
+        case (DiscoveryUnMuteMessageResponse.commandClass, DiscoveryUnMuteMessageResponse.parameterID):
+        guard let value = DiscoveryUnMuteMessageResponse(data: parameterData)
+            else { return nil }
+        self = .discoveryUnMuteMessageResponse(value)
         case (.get, .proxiedDevicesCount):
             self = .getProxiedDeviceCount
         case (GetProxiedDeviceCountResponse.commandClass, GetProxiedDeviceCountResponse.parameterID):
@@ -1263,6 +1295,12 @@ internal extension MessageDataBlock {
     var parameterDataLength: Int {
         switch self {
         case let .discoveryUniqueBranchMessage(value): return value.dataLength
+        case .discoveryMuteMessage:
+            return 0
+        case let .discoveryMuteMessageResponse(value): return value.dataLength
+        case .discoveryUnMuteMessage:
+            return 0
+        case let .discoveryUnMuteMessageResponse(value): return value.dataLength
         case .getProxiedDeviceCount:
             return 0
         case let .getProxiedDeviceCountResponse(value): return value.dataLength
@@ -1480,6 +1518,14 @@ internal extension MessageDataBlock {
     func appendParameterData(_ data: inout Data) {
         switch self {
         case let .discoveryUniqueBranchMessage(value):
+            data += value
+        case .discoveryMuteMessage:
+            break
+        case let .discoveryMuteMessageResponse(value):
+            data += value
+        case .discoveryUnMuteMessage:
+            break
+        case let .discoveryUnMuteMessageResponse(value):
             data += value
         case .getProxiedDeviceCount:
             break
