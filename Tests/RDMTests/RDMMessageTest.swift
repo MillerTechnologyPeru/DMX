@@ -14,6 +14,7 @@ final class RDMMessageTest: XCTestCase {
     static let allTests = [
         ("testDataCheckSum", testDataCheckSum),
         ("testEncodeUID", testEncodeUID),
+        ("testDiscoveryUniqueBranchMessage", testDiscoveryUniqueBranchMessage),
         ("testQueueMessage", testQueueMessage),
         ("testGetStatusMessages", testGetStatusMessages),
         ("testGetStatusMessagesResponse", testGetStatusMessagesResponse),
@@ -176,6 +177,48 @@ final class RDMMessageTest: XCTestCase {
         XCTAssertEqual(uid, euidFromData.decodeUID())
         
         dump(euidFromData.decodeUID())
+    }
+    
+    func testDiscoveryUniqueBranchMessage() {
+        
+        let data = Data([0xCC, 0x01, 0x24, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x10, 0x00, 0x01, 0x0C, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x0E, 0xFB])
+        
+        let discoveryUniqueBranchMessage = DiscoveryUniqueBranchMessage(
+            lowerBoundUID: DeviceUID(rawValue: "1234:56789ABC")!,
+            upperBoundUID: DeviceUID(rawValue: "CBA9:87654321")!
+        )
+        
+        let packet = RDM.Packet(
+            destination: Broadcast.broadcastAllDevicesID,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 0x01,
+            messageCount: 0x00,
+            subDevice: .root,
+            messageData: .discoveryUniqueBranchMessage(discoveryUniqueBranchMessage)
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .discovery)
+        XCTAssertEqual(packet.messageData.parameterID, .uniqueBranch)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 12)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
     }
     
     func testQueueMessage() {
