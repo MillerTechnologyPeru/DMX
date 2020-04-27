@@ -18,6 +18,9 @@ final class RDMMessageTest: XCTestCase {
         ("testDiscoveryMuteMessage", testDiscoveryMuteMessage),
         ("testDiscoveryMuteMessageResponse", testDiscoveryMuteMessageResponse),
         ("testDiscoveryMuteMessageResponseWithBindingUID", testDiscoveryMuteMessageResponseWithBindingUID),
+        ("testDiscoveryUnMuteMessage", testDiscoveryUnMuteMessage),
+        ("testDiscoveryUnMuteMessageResponse", testDiscoveryUnMuteMessageResponse),
+        ("testDiscoveryUnMuteMessageResponseWithBindingUID", testDiscoveryUnMuteMessageResponseWithBindingUID),
         ("testQueueMessage", testQueueMessage),
         ("testGetStatusMessages", testGetStatusMessages),
         ("testGetStatusMessagesResponse", testGetStatusMessagesResponse),
@@ -325,6 +328,121 @@ final class RDMMessageTest: XCTestCase {
         
         XCTAssertEqual(packet.messageData.commandClass, .discoveryResponse)
         XCTAssertEqual(packet.messageData.parameterID, .mute)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 8)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testDiscoveryUnMuteMessage() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x10, 0x00, 0x03, 0x00, 0x06, 0x27])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .discoveryUnMuteMessage
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .discovery)
+        XCTAssertEqual(packet.messageData.parameterID, .unMute)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testDiscoveryUnMuteMessageResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x1A, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x03, 0x02, 0x00, 0x02, 0x06, 0x2D])
+        
+        let unMuteMessage = MuteMessage(
+            controlField: [.subDevice]
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .discoveryUnMuteMessageResponse(.init(muteMessage: unMuteMessage))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .discoveryResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .unMute)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 2)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testDiscoveryUnMuteMessageResponseWithBindingUID() {
+        
+        let data = Data([0xCC, 0x01, 0x20, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x03, 0x08, 0x00, 0x0F, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0x08, 0xB0])
+        
+        let unMuteMessage = MuteMessage(
+            controlField: .all,
+            bindingUID: DeviceUID(rawValue: "1234:56789ABC")!
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .discoveryUnMuteMessageResponse(.init(muteMessage: unMuteMessage))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .discoveryResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .unMute)
         XCTAssertEqual(packet.messageData.parameterDataLength, 8)
 
         XCTAssertEqual(packet.data, data)
