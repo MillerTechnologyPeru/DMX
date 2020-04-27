@@ -41,8 +41,7 @@ public struct CapturePreset: MessageDataBlockProtocol, Equatable, Hashable {
 public extension CapturePreset {
     
     init?(data: Data) {
-        guard data.count == ScenePreset.length || data.count == ScenePreset.lengthWithTimes,
-            let scenePreset = ScenePreset(data: data)
+        guard let scenePreset = ScenePreset(data: data)
             else { return nil }
         self.init(scenePreset: scenePreset)
     }
