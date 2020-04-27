@@ -18,17 +18,14 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
     
     public static var parameterID: ParameterID { return .statusIdDescription }
     
-    public static var maxLength: Int { return 32 }
-    
-    public let response: String
+    public let response: TextDescription
     
     // MARK: - Initialization
     
     /// - parameter response: ASCII text description
     /// - SeeAlso: `StatusMessage.Description`
-    public init(response: String) {
-        let maxLength = type(of: self).maxLength
-        self.response = response.count > maxLength ? String(response.prefix(type(of: self).maxLength)) : response
+    public init(response: TextDescription) {
+        self.response = response
     }
 }
 
@@ -37,8 +34,7 @@ public struct GetStatusIDDescriptionResponse: MessageDataBlockProtocol, Equatabl
 public extension GetStatusIDDescriptionResponse {
     
     init?(data: Data) {
-        guard data.count <= type(of: self).maxLength,
-            let string = String(data: data, encoding: .utf8)
+        guard let string = TextDescription(data: data)
             else { return nil }
         self.init(response: string)
     }
@@ -53,14 +49,11 @@ public extension GetStatusIDDescriptionResponse {
 extension GetStatusIDDescriptionResponse: DataConvertible {
     
     var dataLength: Int {
-        return response.utf8.count
+        return response.dataLength
     }
     
     static func += (data: inout Data, value: GetStatusIDDescriptionResponse) {
-        let utf8 = value.response
-            .prefix(type(of: value).maxLength)
-            .utf8
-        data.append(contentsOf: utf8)
+        data += value.response
     }
 }
 
@@ -70,7 +63,7 @@ extension GetStatusIDDescriptionResponse: DataConvertible {
 extension GetStatusIDDescriptionResponse: ExpressibleByStringLiteral {
     
     public init(stringLiteral value: String) {
-        self.init(response: value)
+        self.init(response: TextDescription(rawValue: value))
     }
 }
 
@@ -79,6 +72,6 @@ extension GetStatusIDDescriptionResponse: ExpressibleByStringLiteral {
 extension GetStatusIDDescriptionResponse: CustomStringConvertible {
     
     public var description: String {
-        return response
+        return response.rawValue
     }
 }

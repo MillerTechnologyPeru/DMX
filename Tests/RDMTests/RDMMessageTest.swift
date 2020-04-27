@@ -633,7 +633,7 @@ final class RDMMessageTest: XCTestCase {
             responseType: ResponseType.acknowledgement,
             messageCount: 0,
             subDevice: .root,
-            messageData: .getStatusIDDescriptionResponse(.init(response: statusMessage.description))
+            messageData: .getStatusIDDescriptionResponse(.init(response: TextDescription(rawValue: statusMessage.description)))
         )
         
         dump(packet)
