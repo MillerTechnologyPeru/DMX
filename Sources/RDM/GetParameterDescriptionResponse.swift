@@ -33,8 +33,7 @@ public struct GetParameterDescriptionResponse: MessageDataBlockProtocol, Equatab
 public extension GetParameterDescriptionResponse {
     
     init?(data: Data) {
-        guard data.count <= ParameterDescription.maxLength,
-              let parameterDescription = ParameterDescription(data: data)
+        guard let parameterDescription = ParameterDescription(data: data)
             else { return nil }
         self.init(parameterDescription: parameterDescription)
     }

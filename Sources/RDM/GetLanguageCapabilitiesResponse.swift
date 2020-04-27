@@ -36,7 +36,7 @@ public extension GetLanguageCapabilitiesResponse {
     internal static var maxLength: Int { return 230 } // 0xE6
     
     init?(data: Data) {
-        guard data.count % MemoryLayout<LanguageCode>.size == 0
+        guard data.count <= type(of: self).maxLength, data.count % MemoryLayout<LanguageCode>.size == 0
              else { return nil }
         let count = data.count / LanguageCode.length
         let languageCodes = (0 ..< count)

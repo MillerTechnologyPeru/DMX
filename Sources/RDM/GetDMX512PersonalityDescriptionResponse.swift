@@ -37,8 +37,7 @@ public extension GetDMX512PersonalityDescriptionResponse {
     internal static var length: Int { return MemoryLayout<UInt8>.size }
     
     init?(data: Data) {
-        guard data.count > DMX512PersonalityDescription.minLength && data.count <= DMX512PersonalityDescription.maxLength,
-              let description = DMX512PersonalityDescription(data: data)
+        guard let description = DMX512PersonalityDescription(data: data)
             else { return nil }
         self.init(description: description)
     }

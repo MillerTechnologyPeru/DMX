@@ -39,8 +39,7 @@ public struct GetSlotDescriptionResponse: MessageDataBlockProtocol, Equatable, H
 public extension GetSlotDescriptionResponse {
     
     init?(data: Data) {
-        guard data.count <= SlotDescription.maxLength,
-              let slotDescription = SlotDescription(data: data)
+        guard let slotDescription = SlotDescription(data: data)
             else { return nil }
         self.init(slotDescription: slotDescription)
     }

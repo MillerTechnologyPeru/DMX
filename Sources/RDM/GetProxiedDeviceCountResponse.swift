@@ -38,7 +38,7 @@ public struct GetProxiedDeviceCountResponse: MessageDataBlockProtocol, Equatable
 public extension GetProxiedDeviceCountResponse {
     
     init?(data: Data) {
-        guard data.count == ProxiedDeviceCount.length, let proxiedDeviceCount = ProxiedDeviceCount(data: data)
+        guard let proxiedDeviceCount = ProxiedDeviceCount(data: data)
             else { return nil }
         self.init(proxiedDeviceCount: proxiedDeviceCount)
     }

@@ -33,9 +33,7 @@ public struct GetSensorDefinitionResponse: MessageDataBlockProtocol, Equatable, 
 public extension GetSensorDefinitionResponse {
     
     init?(data: Data) {
-        guard data.count >= SensorDefinition.minLength,
-              data.count <= SensorDefinition.maxLength,
-              let sensorDefinition = SensorDefinition(data: data)
+        guard let sensorDefinition = SensorDefinition(data: data)
             else { return nil }
         self.init(sensorDefinition: sensorDefinition)
     }

@@ -32,8 +32,7 @@ public struct GetDeviceInfoResponse: MessageDataBlockProtocol, Equatable, Hashab
 public extension GetDeviceInfoResponse {
     
     init?(data: Data) {
-        guard data.count == DeviceInfo.length,
-              let deviceInfo = DeviceInfo(data: data)
+        guard let deviceInfo = DeviceInfo(data: data)
             else { return nil }
         self.init(deviceInfo: deviceInfo)
     }

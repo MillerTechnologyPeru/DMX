@@ -35,8 +35,7 @@ public struct GetLanguageResponse: MessageDataBlockProtocol, Equatable, Hashable
 public extension GetLanguageResponse {
     
     init?(data: Data) {
-        guard data.count == LanguageCode.length,
-              let languageCode = LanguageCode(data: data)
+        guard let languageCode = LanguageCode(data: data)
              else { return nil }
         self.init(languageCode: languageCode)
     }

@@ -40,7 +40,7 @@ public struct GetCommsStatusResponse: MessageDataBlockProtocol, Equatable, Hasha
 public extension GetCommsStatusResponse {
     
     init?(data: Data) {
-        guard data.count == CommsStatus.length, let commStatus = CommsStatus(data: data)
+        guard let commStatus = CommsStatus(data: data)
             else { return nil }
         self.init(commStatus: commStatus)
     }

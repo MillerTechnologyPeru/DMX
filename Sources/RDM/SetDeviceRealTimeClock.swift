@@ -37,7 +37,7 @@ public extension SetDeviceRealTimeClock {
     internal static var length: Int { return MemoryLayout<RealTimeClock>.size }
     
     init?(data: Data) {
-        guard data.count == type(of: self).length, let realTimeClock = RealTimeClock(data: data)
+        guard let realTimeClock = RealTimeClock(data: data)
             else { return nil }
         self.init(realTimeClock: realTimeClock)
     }

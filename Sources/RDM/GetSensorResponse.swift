@@ -30,7 +30,7 @@ public struct GetSensorResponse: MessageDataBlockProtocol, Equatable, Hashable {
 public extension GetSensorResponse {
     
     init?(data: Data) {
-        guard data.count == SensorValue.length, let sensorValue = SensorValue(data: data)
+        guard let sensorValue = SensorValue(data: data)
             else { return nil }
         self.init(sensorValue: sensorValue)
     }

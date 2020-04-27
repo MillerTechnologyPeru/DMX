@@ -44,7 +44,7 @@ public struct SetPresetPlayback: MessageDataBlockProtocol, Equatable, Hashable {
 public extension SetPresetPlayback {
     
     init?(data: Data) {
-        guard data.count == PresetPlayback.length, let presetPlayback = PresetPlayback(data: data)
+        guard let presetPlayback = PresetPlayback(data: data)
             else { return nil }
         self.init(presetPlayback: presetPlayback)
     }
