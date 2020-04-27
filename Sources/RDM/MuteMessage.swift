@@ -28,6 +28,9 @@ public struct MuteMessage: Equatable, Hashable {
     /// This Binding UID field allows the controller to associate multiple responder ports discovered within a single physical device.
     public var bindingUID: DeviceUID?
     
+    /// Data Length
+    internal let length: DataLength
+    
     // MARK: - Initialization
     
     public init(controlField: BitMaskOptionSet<ControlField>,
@@ -35,6 +38,7 @@ public struct MuteMessage: Equatable, Hashable {
     
         self.controlField = controlField
         self.bindingUID = bindingUID
+        self.length = bindingUID != nil ? .lengthWithUID : .length
     }
 }
 
@@ -42,23 +46,22 @@ public struct MuteMessage: Equatable, Hashable {
 
 public extension MuteMessage {
     
-    internal static var lengthWithUID: Int { return 8 }
-    
-    internal static var length: Int { return 2 }
-    
     init?(data: Data) {
-        if data.count == type(of: self).lengthWithUID {
-            guard let uid = DeviceUID(data: data.subdataNoCopy(in: type(of: self).length ..< data.count))
-                else { return nil }
-            
-            self.init(
-                controlField: BitMaskOptionSet<ControlField>(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))),
-                bindingUID: uid
-            )
-        } else if data.count == type(of: self).length {
-            
-            self.init(controlField: BitMaskOptionSet<ControlField>(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))))
+        if let length = DataLength(rawValue: data.count) {
+            switch length {
+            case .lengthWithUID:
+                guard let uid = DeviceUID(data: data.subdataNoCopy(in: DataLength.length.rawValue ..< data.count))
+                    else { return nil }
+                
+                self.init(
+                    controlField: BitMaskOptionSet<ControlField>(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))),
+                    bindingUID: uid
+                )
+            case .length:
+                self.init(controlField: BitMaskOptionSet<ControlField>(rawValue: UInt16(bigEndian: UInt16(bytes: (data[0], data[1])))))
+            }
         } else {
+            
             return nil
         }
     }
@@ -73,9 +76,7 @@ public extension MuteMessage {
 extension MuteMessage: DataConvertible {
     
     var dataLength: Int {
-        guard let _ = bindingUID
-            else { return type(of: self).length }
-        return type(of: self).lengthWithUID
+        return length.rawValue
     }
     
     static func += (data: inout Data, value: Self) {
@@ -83,5 +84,18 @@ extension MuteMessage: DataConvertible {
         guard let uid = value.bindingUID
             else { return }
         data += uid
+    }
+}
+
+// MARK: - Supporting Types
+
+// MARK: - Length
+
+extension MuteMessage {
+    
+    enum DataLength: Int, Equatable {
+        
+        case length = 2
+        case lengthWithUID = 8
     }
 }
