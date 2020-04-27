@@ -14,12 +14,12 @@ import Foundation
 */
 public struct Broadcast {
     
-    /// Broadcast Device UID's
-    public static let broadcastAllDevicesID: UInt64 =  0xFFFFFFFFFFFFFFFF // BROADCAST_ALL_DEVICES_ID
+    /// Broadcast Device UID's `0xFFFFFFFFFFFF`
+    public static var broadcastAllDevicesID: DeviceUID { return DeviceUID(manufacturer: .max, device: .max) }  // BROADCAST_ALL_DEVICES_ID
     
-    /// Broadcast Device UID's
+    /// Broadcast Device UID's  `0xmmmmFFFFFFFF`
     /// - Parameter manufacturerId: Specific Manufacturer ID  e.g.`0xMMMM`
-    public static func broadcastAllDevicesID(manufacturerId id: UInt16) -> UInt64 {
-        return UInt64(bigEndian: UInt64(bytes: (id.bytes.1, id.bytes.0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF))) // ALL_DEVICES_ID
+    public static func broadcastAllDevicesID(manufacturerId code: DeviceUID.ManufacturerCode) -> DeviceUID {
+        return DeviceUID(manufacturer: code, device: .max)  // ALL_DEVICES_ID
     }
 }
