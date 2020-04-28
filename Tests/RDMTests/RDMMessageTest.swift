@@ -25,6 +25,10 @@ final class RDMMessageTest: XCTestCase {
         ("testGetProxiedDeviceCountResponse",testGetProxiedDeviceCountResponse),
         ("testGetProxiedDevices",testGetProxiedDevices),
         ("testGetProxiedDevicesResponse",testGetProxiedDevicesResponse),
+        ("testGetCommsStatus", testGetCommsStatus),
+        ("testGetCommsStatusResponse", testGetCommsStatusResponse),
+        ("testSetCommsStatus", testSetCommsStatus),
+        ("testSetCommsStatusResponse", testSetCommsStatusResponse),
         ("testQueueMessage", testQueueMessage),
         ("testGetStatusMessages", testGetStatusMessages),
         ("testGetStatusMessagesResponse", testGetStatusMessagesResponse),
@@ -606,6 +610,145 @@ final class RDMMessageTest: XCTestCase {
             else { XCTFail("Could not parse Message Data Block"); return }
         dump(messageData)
         XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetCommsStatus() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x15, 0x00, 0x06, 0x49])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getCommsStatus
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .get)
+        XCTAssertEqual(packet.messageData.parameterID, .communicationStatus)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testGetCommsStatusResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x1E, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00, 0x15, 0x06, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x08, 0x53])
+        
+        let commsStatus = CommsStatus(
+            shortMessage: .min,
+            lengthMismatch: .min,
+            checksumFail: .max
+        )
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .getCommsStatusResponse(.init(commStatus: commsStatus))
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .getResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .communicationStatus)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 6)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let messageData = MessageDataBlock(data: packet.messageData.data)
+            else { XCTFail("Could not parse Message Data Block"); return }
+        dump(messageData)
+        XCTAssertEqual(packet.messageData.data, messageData.data)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetCommsStatus() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x01, 0x00, 0x00, 0x00, 0x30, 0x00, 0x15, 0x00, 0x06, 0x59])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            portID: 1,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setCommsStatus
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .set)
+        XCTAssertEqual(packet.messageData.parameterID, .communicationStatus)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+        
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
+        
+        guard let decodedPacket = RDM.Packet(data: data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedPacket)
+        
+        guard let decodedFromPacketData = RDM.Packet(data: packet.data)
+            else { XCTFail("Could not parse packet"); return }
+        XCTAssertEqual(packet, decodedFromPacketData)
+    }
+    
+    func testSetCommsStatusResponse() {
+        
+        let data = Data([0xCC, 0x01, 0x18, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0x15, 0x00, 0x06, 0x59])
+        
+        let packet = RDM.Packet(
+            destination: DeviceUID(rawValue: "1234:56789ABC")!,
+            source: DeviceUID(rawValue: "CBA9:87654321")!,
+            transaction: 0,
+            responseType: .acknowledgement,
+            messageCount: 0,
+            subDevice: .root,
+            messageData: .setCommsStatusResponse
+        )
+        
+        dump(packet)
+        
+        XCTAssertEqual(packet.messageData.commandClass, .setResponse)
+        XCTAssertEqual(packet.messageData.parameterID, .communicationStatus)
+        XCTAssertEqual(packet.messageData.parameterDataLength, 0)
+
+        XCTAssertEqual(packet.data, data)
+        XCTAssert(packet.isChecksumValid)
         
         guard let decodedPacket = RDM.Packet(data: data)
             else { XCTFail("Could not parse packet"); return }
