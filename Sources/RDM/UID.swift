@@ -150,22 +150,3 @@ extension DeviceUID: RandomAccessCollection {
         return i + 1
     }
 }
-
-// MARK: - Codable
-
-extension DeviceUID: Codable {
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let rawValue = try container.decode(String.self)
-        guard let value = Self.init(rawValue: rawValue) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid \(Self.self) string \(rawValue)")
-        }
-        self = value
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawValue)
-    }
-}

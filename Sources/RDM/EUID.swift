@@ -160,8 +160,6 @@ extension EncodedUID {
 
 public extension EncodedUID {
     
-    static var encodedDataLength: Int { return 16 }
-    
     func decodeUID() -> DeviceUID {
         
         let uidManufaturer: DeviceUID.ManufacturerCode = UInt16(bigEndian: UInt16(bytes: (

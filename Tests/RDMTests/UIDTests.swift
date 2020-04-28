@@ -15,7 +15,8 @@ final class UIDTests: XCTestCase {
         ("testString", testString),
         ("testMalformedString", testMalformedString),
         ("testData", testData),
-        ("testMalformedData", testMalformedData)
+        ("testMalformedData", testMalformedData),
+        ("testEUID", testEUID)
     ]
     
     func testString() {
@@ -90,5 +91,19 @@ final class UIDTests: XCTestCase {
         ]
         
         malformed.forEach { XCTAssertNil(DeviceUID(data: $0)) }
+    }
+    
+    func testEUID() {
+        
+        let uid = Broadcast.broadcastAllDevicesID(manufacturerId: 0x001A)
+        
+        XCTAssertEqual(uid.index(before: 0), -1)
+        
+        let euid = EncodedUID(uid: uid)
+        
+        let euidFromData = EncodedUID(data: euid.data)
+        XCTAssertEqual(euid, euidFromData)
+        XCTAssertEqual(euid.dataLength, euidFromData?.dataLength)
+        XCTAssertEqual(euid.hashValue, euidFromData?.hashValue)
     }
 }
