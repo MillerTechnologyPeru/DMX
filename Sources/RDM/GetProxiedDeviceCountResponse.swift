@@ -22,7 +22,7 @@ public struct GetProxiedDeviceCountResponse: MessageDataBlockProtocol, Equatable
     
     public static var commandClass: CommandClass { return .getResponse }
     
-    public static var parameterID: ParameterID { return .proxiedDevicesCount }
+    public static var parameterID: ParameterID { return .proxiedDeviceCount }
     
     public let proxiedDeviceCount: ProxiedDeviceCount
     

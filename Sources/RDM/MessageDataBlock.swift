@@ -486,7 +486,7 @@ public extension MessageDataBlock {
         case let .discoveryUnMuteMessageResponse(value):
             return type(of: value).parameterID
         case .getProxiedDeviceCount:
-            return .proxiedDevicesCount
+            return .proxiedDeviceCount
         case let .getProxiedDeviceCountResponse(value):
             return type(of: value).parameterID
         case .getProxiedDevices:
@@ -816,7 +816,7 @@ public extension MessageDataBlock {
         guard let value = DiscoveryUnMuteMessageResponse(data: parameterData)
             else { return nil }
         self = .discoveryUnMuteMessageResponse(value)
-        case (.get, .proxiedDevicesCount):
+        case (.get, .proxiedDeviceCount):
             self = .getProxiedDeviceCount
         case (GetProxiedDeviceCountResponse.commandClass, GetProxiedDeviceCountResponse.parameterID):
             guard let value = GetProxiedDeviceCountResponse(data: parameterData)

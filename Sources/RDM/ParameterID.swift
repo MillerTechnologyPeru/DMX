@@ -69,7 +69,7 @@ public extension ParameterID {
     static var proxiedDevices: ParameterID { return 0x0010 } // PROXIED_DEVICES
     
     /// Proxied Devices Count
-    static var proxiedDevicesCount: ParameterID { return 0x0011 } // PROXIED_DEVICE_COUNT
+    static var proxiedDeviceCount: ParameterID { return 0x0011 } // PROXIED_DEVICE_COUNT
     
     /// Communication Status
     static var communicationStatus: ParameterID { return 0x0015 } // COMMS_STATUS
@@ -270,7 +270,7 @@ public extension ParameterID {
         .mute: "Mute",
         .unMute: "Un Mute",
         .proxiedDevices: "Proxy Devices",
-        .proxiedDevicesCount: "Proxy Devices Count",
+        .proxiedDeviceCount: "Proxy Devices Count",
         .communicationStatus: "Communication Status",
         .queuedMessage: "Queue Message",
         .statusMessages: "Status Messages",
@@ -331,7 +331,7 @@ public extension ParameterID {
     
     internal static let getAllowed: Set<ParameterID> = [
         .proxiedDevices,
-        .proxiedDevicesCount,
+        .proxiedDeviceCount,
         .communicationStatus,
         .queuedMessage,
         .statusMessages,
